@@ -11,4 +11,8 @@ services:
         sync: false
       - key: CACHE_TTL_SECONDS
         value: 3600
+      - key: GOOGLE_CSE_API_KEY
+        sync: false
+      - key: GOOGLE_CSE_CX
+        sync: false
     autoDeploy: true

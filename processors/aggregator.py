@@ -1,9 +1,30 @@
 import hashlib
+import json
 import logging
 from collections import Counter, defaultdict
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 
 from processors.categorizer import categorize_review, get_all_categories
+
+# 카테고리 display name → keywords.json key 매핑
+_DISPLAY_TO_KEY = {
+    "앱 성능/속도": "앱_성능_속도",
+    "UI/UX": "UI_UX",
+    "포인트/혜택": "포인트_혜택",
+    "배송/주문": "배송_주문",
+    "고객서비스": "고객서비스",
+    "로그인/인증": "로그인_인증",
+    "기타": "기타",
+}
+
+
+def _load_category_keywords() -> dict:
+    try:
+        kw_path = Path(__file__).parent.parent / "data" / "keywords.json"
+        return json.loads(kw_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 from processors.scorer import (
     calculate_priority_score,
     normalize_score,
@@ -75,17 +96,23 @@ def build_trend_data(reviews: list, days: int = 90) -> dict:
     return {"labels": labels, "series": series}
 
 
-def _top_keywords(reviews: list, n: int = 3) -> list:
+def _top_keywords(reviews: list, n: int = 3, allowed_keywords: list = None) -> list:
     counter: Counter = Counter()
     for r in reviews:
         text = (r.get("body") or "") + " " + (r.get("title") or "")
-        words = text.split()
-        for w in words:
-            w = w.strip(".,!?\"'()[]")
-            if len(w) >= 2 and w not in {"이거", "그게", "그냥", "진짜", "하고",
-                                          "어서", "에서", "으로", "하는", "이런",
-                                          "그런", "있는", "없는", "해서", "해도"}:
-                counter[w] += 1
+        text_lower = text.lower()
+        if allowed_keywords:
+            for kw in allowed_keywords:
+                if kw in text_lower:
+                    counter[kw] += 1
+        else:
+            words = text.split()
+            for w in words:
+                w = w.strip(".,!?\"'()[]")
+                if len(w) >= 2 and w not in {"이거", "그게", "그냥", "진짜", "하고",
+                                              "어서", "에서", "으로", "하는", "이런",
+                                              "그런", "있는", "없는", "해서", "해도"}:
+                    counter[w] += 1
     return [w for w, _ in counter.most_common(n)]
 
 
@@ -126,6 +153,7 @@ def build_full_dataset(raw_reviews: list) -> dict:
     rating_dist = Counter(str(r["rating"]) for r in rated)
 
     all_categories = get_all_categories()
+    cat_keywords_map = _load_category_keywords()
     by_category: dict = {}
     for cat in all_categories:
         cat_reviews = [r for r in reviews if r.get("category") == cat]
@@ -136,13 +164,15 @@ def build_full_dataset(raw_reviews: list) -> dict:
             }
             continue
         neg = [r for r in cat_reviews if r.get("sentiment") == "negative"]
+        cat_key = _DISPLAY_TO_KEY.get(cat, "기타")
+        allowed = cat_keywords_map.get(cat_key) or None
         by_category[cat] = {
             "count": len(cat_reviews),
             "avg_priority": round(
                 sum(r["priority_score"] for r in cat_reviews) / len(cat_reviews), 1
             ),
             "negative_pct": round(len(neg) / len(cat_reviews) * 100, 1),
-            "top_issues": _top_keywords(neg or cat_reviews, n=5),
+            "top_issues": _top_keywords(neg or cat_reviews, n=5, allowed_keywords=allowed),
             "priority_rank": 0,
         }
 

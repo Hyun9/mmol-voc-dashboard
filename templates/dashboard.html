@@ -78,13 +78,7 @@
     gap: 16px;
   }
   .header-left { display: flex; align-items: center; gap: 16px; }
-  .logo-badge {
-    background: linear-gradient(135deg, #7B5CFF, #E83FA0);
-    border-radius: 12px; padding: 8px 14px;
-    font-weight: 700; font-size: 14px; letter-spacing: -0.3px;
-    white-space: nowrap;
-  }
-  .header-title { font-size: 18px; font-weight: 600; opacity: 0.95; }
+  .header-title { font-size: 13px; font-weight: 600; opacity: 0.95; }
   .header-right { display: flex; align-items: center; gap: 16px; }
   .status-badge {
     display: flex; align-items: center; gap: 8px;
@@ -236,17 +230,44 @@
     font-size: 12px; line-height: 1.5;
   }
 
-  /* expanded row */
-  .expanded-row td {
-    padding: 0 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.07);
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
   }
-  .expanded-content {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 10px; padding: 16px;
-    font-size: 13px; line-height: 1.7; opacity: 0.8;
-    white-space: pre-wrap;
+  .modal-glass {
+    background: rgba(20,15,50,0.93);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px; padding: 32px;
+    max-width: 680px; width: 100%; max-height: 82vh; overflow-y: auto;
+    color: rgba(255,255,255,0.9);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6); position: relative;
   }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7); width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .modal-close:hover { background: rgba(255,91,91,0.2); border-color: rgba(255,91,91,0.4); color: #FF5B5B; }
+  .modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .modal-meta { font-size: 12px; opacity: 0.45; }
+  .modal-review-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; line-height: 1.5; }
+  .modal-body { font-size: 14px; line-height: 1.85; opacity: 0.85; white-space: pre-wrap; word-break: break-word; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); }
+  .modal-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #B39DFF; font-size: 13px; text-decoration: none;
+    padding: 8px 16px; border-radius: 8px;
+    border: 1px solid rgba(123,92,255,0.3); background: rgba(123,92,255,0.1);
+    transition: all 0.2s;
+  }
+  .modal-link:hover { background: rgba(123,92,255,0.2); border-color: rgba(123,92,255,0.5); }
 
   /* ── PAGINATION ── */
   .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; }
@@ -336,8 +357,7 @@
 <!-- Header -->
 <header>
   <div class="header-left">
-    <div class="logo-badge">M몰 VOC</div>
-    <div class="header-title">현대카드 M몰 VOC 대시보드</div>
+    <div class="header-title">M.Mall Voc Dashboard</div>
   </div>
   <div class="header-right">
     <div class="status-badge">
@@ -403,15 +423,6 @@
   </div>
 </div>
 
-<!-- Chart Row 2: Trend -->
-<div class="chart-row chart-row-1" style="margin-bottom:20px;">
-  <div class="glass chart-card">
-    <div class="chart-title">평점 트렌드</div>
-    <div class="chart-sub">최근 90일 주간 평균 평점 (플레이스토어 / 앱스토어)</div>
-    <div class="chart-wrap" id="chart-trend" style="height:240px;"></div>
-  </div>
-</div>
-
 <!-- Chart Row 3: Category Donut + Priority Ranking -->
 <div class="chart-row chart-row-2" style="margin-bottom:20px;">
   <div class="glass chart-card">
@@ -430,23 +441,21 @@
 <div class="section-title">카테고리별 이슈 분석</div>
 <div class="cat-priority-grid" id="cat-cards"></div>
 
-<!-- Priority Reviews Table -->
-<div class="section-title">VOC 목록</div>
+<!-- Store Reviews Section -->
+<div class="section-title">스토어 리뷰 목록</div>
 <div class="glass table-card">
   <div class="table-header">
-    <div style="font-size:14px;font-weight:600;opacity:0.85;">리뷰 목록
-      <span id="review-count-badge" style="font-size:12px;opacity:0.4;margin-left:8px;font-weight:400;"></span>
+    <div style="font-size:14px;font-weight:600;opacity:0.85;">앱스토어 · 플레이스토어
+      <span id="store-count-badge" style="font-size:12px;opacity:0.4;margin-left:8px;font-weight:400;"></span>
     </div>
     <div class="table-filters">
-      <input type="text" id="filter-search" placeholder="🔍 검색..." style="width:160px;" oninput="applyFilters()">
-      <select id="filter-source" onchange="applyFilters()">
+      <input type="text" id="store-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyStoreFilters()">
+      <select id="store-filter-source" onchange="applyStoreFilters()">
         <option value="">모든 소스</option>
         <option value="google_play">Google Play</option>
         <option value="app_store">App Store</option>
-        <option value="naver_blog">네이버 블로그</option>
-        <option value="web_snippet">웹 검색</option>
       </select>
-      <select id="filter-category" onchange="applyFilters()">
+      <select id="store-filter-category" onchange="applyStoreFilters()">
         <option value="">모든 카테고리</option>
         <option value="앱 성능/속도">앱 성능/속도</option>
         <option value="UI/UX">UI/UX</option>
@@ -456,13 +465,13 @@
         <option value="로그인/인증">로그인/인증</option>
         <option value="기타">기타</option>
       </select>
-      <select id="filter-sentiment" onchange="applyFilters()">
+      <select id="store-filter-sentiment" onchange="applyStoreFilters()">
         <option value="">모든 감성</option>
         <option value="negative">부정</option>
         <option value="neutral">중립</option>
         <option value="positive">긍정</option>
       </select>
-      <select id="filter-rating" onchange="applyFilters()">
+      <select id="store-filter-rating" onchange="applyStoreFilters()">
         <option value="">모든 평점</option>
         <option value="1">★ 1점</option>
         <option value="2">★★ 2점</option>
@@ -470,7 +479,7 @@
         <option value="4">★★★★ 4점</option>
         <option value="5">★★★★★ 5점</option>
       </select>
-      <select id="filter-sort" onchange="applyFilters()">
+      <select id="store-filter-sort" onchange="applyStoreFilters()">
         <option value="priority">우선순위순</option>
         <option value="date">최신순</option>
         <option value="rating">평점순</option>
@@ -481,23 +490,81 @@
     <table class="reviews-table">
       <thead>
         <tr>
-          <th>소스</th>
-          <th>평점</th>
-          <th>감성</th>
-          <th>카테고리</th>
-          <th>우선순위</th>
-          <th>레벨</th>
-          <th>내용</th>
-          <th>날짜</th>
+          <th>소스</th><th>평점</th><th>감성</th><th>카테고리</th>
+          <th>우선순위</th><th>레벨</th><th>내용</th><th>날짜</th>
         </tr>
       </thead>
-      <tbody id="reviews-tbody"></tbody>
+      <tbody id="store-reviews-tbody"></tbody>
     </table>
   </div>
-  <div class="pagination" id="pagination"></div>
+  <div class="pagination" id="store-pagination"></div>
+</div>
+
+<!-- Web Search Section -->
+<div class="section-title" style="margin-top:32px;">웹 서치</div>
+<div class="glass table-card">
+  <div class="table-header">
+    <div style="font-size:14px;font-weight:600;opacity:0.85;">네이버 블로그 · 웹 검색
+      <span id="web-count-badge" style="font-size:12px;opacity:0.4;margin-left:8px;font-weight:400;"></span>
+    </div>
+    <div class="table-filters">
+      <input type="text" id="web-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyWebFilters()">
+      <select id="web-filter-source" onchange="applyWebFilters()">
+        <option value="">모든 소스</option>
+        <option value="naver_blog">네이버 블로그</option>
+        <option value="web_snippet">웹 검색</option>
+      </select>
+      <select id="web-filter-category" onchange="applyWebFilters()">
+        <option value="">모든 카테고리</option>
+        <option value="앱 성능/속도">앱 성능/속도</option>
+        <option value="UI/UX">UI/UX</option>
+        <option value="포인트/혜택">포인트/혜택</option>
+        <option value="배송/주문">배송/주문</option>
+        <option value="고객서비스">고객서비스</option>
+        <option value="로그인/인증">로그인/인증</option>
+        <option value="기타">기타</option>
+      </select>
+      <select id="web-filter-sentiment" onchange="applyWebFilters()">
+        <option value="">모든 감성</option>
+        <option value="negative">부정</option>
+        <option value="neutral">중립</option>
+        <option value="positive">긍정</option>
+      </select>
+      <select id="web-filter-sort" onchange="applyWebFilters()">
+        <option value="priority">우선순위순</option>
+        <option value="date">최신순</option>
+      </select>
+    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="reviews-table">
+      <thead>
+        <tr>
+          <th>소스</th><th>감성</th><th>카테고리</th>
+          <th>우선순위</th><th>레벨</th><th>내용</th><th>날짜</th>
+        </tr>
+      </thead>
+      <tbody id="web-reviews-tbody"></tbody>
+    </table>
+  </div>
+  <div class="pagination" id="web-pagination"></div>
 </div>
 
 </main>
+</div>
+
+<!-- Review Modal -->
+<div id="review-modal" class="modal-overlay" onclick="closeModalOverlay(event)" style="display:none;">
+  <div class="modal-glass">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <span class="source-badge" id="modal-source-badge"></span>
+      <span class="modal-meta" id="modal-meta"></span>
+    </div>
+    <div class="modal-review-title" id="modal-review-title" style="display:none;"></div>
+    <div class="modal-body" id="modal-body-text"></div>
+    <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener" style="display:none;">원문 보기 →</a>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -506,8 +573,12 @@
 {% raw %}<script>
 // ── STATE ──
 let allData = null;
-let currentPage = 1;
 let pollingInterval = null;
+let storePage = 1;
+let webPage = 1;
+const PAGE_SIZE = 20;
+let _storePagedReviews = [];
+let _webPagedReviews = [];
 
 // ── INIT ──
 async function init() {
@@ -641,8 +712,10 @@ function renderDashboard(data) {
   renderKPIs(s);
   renderCharts(data);
   renderCategoryCards(s.by_category || {});
-  currentPage = 1;
-  loadReviews();
+  storePage = 1;
+  webPage = 1;
+  renderStoreReviews();
+  renderWebReviews();
 }
 
 function renderKPIs(s) {
@@ -721,27 +794,6 @@ function renderCharts(data) {
     yaxis: { gridcolor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', tickfont:{size:10} },
     margin: { t: 10, b: 60, l: 40, r: 10 },
   }, { responsive: true, displayModeBar: false });
-
-  // 3. Trend
-  const trend = s.trend_data || {};
-  // Keep full YYYY-MM-DD to avoid Plotly misinterpreting "02-02" as year 2002
-  const tLabels = (trend.labels || []);
-  const tSeries = trend.series || {};
-  const tTraces = [];
-  if (tSeries.google_play) tTraces.push({ name:'Google Play', x: tLabels, y: tSeries.google_play, mode:'lines+markers', line:{color:'#7B5CFF',width:2}, marker:{size:5}, connectgaps:true, hovertemplate:'%{x}<br>Play: %{y:.1f}★<extra></extra>' });
-  if (tSeries.app_store) tTraces.push({ name:'App Store', x: tLabels, y: tSeries.app_store, mode:'lines+markers', line:{color:'#60B2FF',width:2}, marker:{size:5}, connectgaps:true, hovertemplate:'%{x}<br>AppStore: %{y:.1f}★<extra></extra>' });
-  if (tSeries.overall) tTraces.push({ name:'전체 평균', x: tLabels, y: tSeries.overall, mode:'lines', line:{color:'rgba(255,255,255,0.4)',width:2,dash:'dot'}, connectgaps:true, hovertemplate:'%{x}<br>전체: %{y:.1f}★<extra></extra>' });
-
-  if (tTraces.length > 0) {
-    Plotly.newPlot('chart-trend', tTraces, {
-      ...TRANSPARENT_LAYOUT,
-      xaxis: { gridcolor:'rgba(255,255,255,0.06)', color:'rgba(255,255,255,0.4)', tickangle:-45, tickfont:{size:9} },
-      yaxis: { gridcolor:'rgba(255,255,255,0.06)', color:'rgba(255,255,255,0.4)', range:[1,5.2], tickfont:{size:10} },
-      margin: { t:10, b:60, l:40, r:10 },
-    }, { responsive:true, displayModeBar:false });
-  } else {
-    document.getElementById('chart-trend').innerHTML = '<div class="no-data"><div class="no-data-icon">📉</div>트렌드 데이터가 충분하지 않습니다.</div>';
-  }
 
   // 4. Category Donut
   const byCat = s.by_category || {};
@@ -822,105 +874,172 @@ function renderCategoryCards(byCat) {
 }
 
 // ── REVIEWS ──
-let reviewState = { page:1, total:0, pages:0 };
+const SRC_LABELS = { google_play:'Play', app_store:'AppStore', naver_blog:'Naver', web_snippet:'Web' };
+const SRC_NAMES  = { google_play:'Google Play', app_store:'App Store', naver_blog:'네이버 블로그', web_snippet:'웹 검색' };
 
-async function loadReviews(page) {
-  page = page || currentPage;
-  const source = document.getElementById('filter-source')?.value || '';
-  const category = document.getElementById('filter-category')?.value || '';
-  const sentiment = document.getElementById('filter-sentiment')?.value || '';
-  const rating = document.getElementById('filter-rating')?.value || '';
-  const sort = document.getElementById('filter-sort')?.value || 'priority';
-  const q = document.getElementById('filter-search')?.value || '';
-
-  const params = new URLSearchParams({ page, sort });
-  if (source) params.append('source', source);
-  if (category) params.append('category', category);
-  if (sentiment) params.append('sentiment', sentiment);
-  if (rating) params.append('rating', rating);
-  if (q) params.append('q', q);
-
-  try {
-    const res = await fetch(`/api/reviews?${params}`);
-    const data = await res.json();
-    reviewState = { page: data.page, total: data.total, pages: data.pages };
-    currentPage = data.page;
-    renderReviews(data.reviews, data.total);
-    renderPagination(data.page, data.pages);
-  } catch (e) {}
+function filterAndSort(reviews, { source, category, sentiment, rating, sort, q }) {
+  let r = [...reviews];
+  if (source)   r = r.filter(x => x.source === source);
+  if (category) r = r.filter(x => x.category === category);
+  if (sentiment)r = r.filter(x => x.sentiment === sentiment);
+  if (rating)   r = r.filter(x => String(x.rating) === rating);
+  if (q) {
+    const lq = q.toLowerCase();
+    r = r.filter(x => ((x.body||'') + ' ' + (x.title||'')).toLowerCase().includes(lq));
+  }
+  if (sort === 'date')   r.sort((a,b) => (b.date||'') > (a.date||'') ? 1 : -1);
+  else if (sort === 'rating') r.sort((a,b) => (b.rating||0) - (a.rating||0));
+  else r.sort((a,b) => (b.priority_score_raw||b.priority_score||0) - (a.priority_score_raw||a.priority_score||0));
+  return r;
 }
 
-function applyFilters() {
-  currentPage = 1;
-  loadReviews(1);
+function applyStoreFilters() { storePage = 1; renderStoreReviews(); }
+function applyWebFilters()   { webPage = 1;   renderWebReviews();   }
+
+function renderStoreReviews() {
+  if (!allData) return;
+  const base = allData.reviews.filter(r => ['google_play','app_store'].includes(r.source));
+  const filters = {
+    source:    document.getElementById('store-filter-source')?.value || '',
+    category:  document.getElementById('store-filter-category')?.value || '',
+    sentiment: document.getElementById('store-filter-sentiment')?.value || '',
+    rating:    document.getElementById('store-filter-rating')?.value || '',
+    sort:      document.getElementById('store-filter-sort')?.value || 'priority',
+    q:         document.getElementById('store-filter-search')?.value || '',
+  };
+  const filtered = filterAndSort(base, filters);
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (storePage > pages) storePage = pages;
+  _storePagedReviews = filtered.slice((storePage-1)*PAGE_SIZE, storePage*PAGE_SIZE);
+  document.getElementById('store-count-badge').textContent = `${total.toLocaleString()}건`;
+  renderReviewRows('store-reviews-tbody', _storePagedReviews, 'openStoreModal', true);
+  renderPaginationFor('store-pagination', storePage, pages, 'store');
 }
 
-function renderReviews(reviews, total) {
-  document.getElementById('review-count-badge').textContent = `${total.toLocaleString()}건`;
-  const tbody = document.getElementById('reviews-tbody');
+function renderWebReviews() {
+  if (!allData) return;
+  const base = allData.reviews.filter(r => ['naver_blog','web_snippet'].includes(r.source));
+  const filters = {
+    source:    document.getElementById('web-filter-source')?.value || '',
+    category:  document.getElementById('web-filter-category')?.value || '',
+    sentiment: document.getElementById('web-filter-sentiment')?.value || '',
+    rating:    '',
+    sort:      document.getElementById('web-filter-sort')?.value || 'priority',
+    q:         document.getElementById('web-filter-search')?.value || '',
+  };
+  const filtered = filterAndSort(base, filters);
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (webPage > pages) webPage = pages;
+  _webPagedReviews = filtered.slice((webPage-1)*PAGE_SIZE, webPage*PAGE_SIZE);
+  document.getElementById('web-count-badge').textContent = `${total.toLocaleString()}건`;
+  renderReviewRows('web-reviews-tbody', _webPagedReviews, 'openWebModal', false);
+  renderPaginationFor('web-pagination', webPage, pages, 'web');
+}
 
+function openStoreModal(idx) { openModal(_storePagedReviews[idx]); }
+function openWebModal(idx)   { openModal(_webPagedReviews[idx]);   }
+
+function renderReviewRows(tbodyId, reviews, openFn, showRating) {
+  const tbody = document.getElementById(tbodyId);
+  const cols = showRating ? 8 : 7;
   if (!reviews || reviews.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
     return;
   }
-
+  const sentMap = { positive:'긍정', neutral:'중립', negative:'부정' };
   tbody.innerHTML = reviews.map((r, i) => {
-    const stars = r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5-r.rating) : '–';
-    const dateStr = r.date ? r.date.substring(0,10) : '–';
-    const body = (r.body || r.title || '').trim();
-    const preview = body.length > 80 ? body.substring(0,80)+'…' : body;
-    const srcKey = r.source || 'web_snippet';
-    const srcLabels = { google_play:'Play', app_store:'AppStore', naver_blog:'Naver', web_snippet:'Web' };
-    const pct = r.priority_score || 0;
+    const stars    = r.rating ? '★'.repeat(r.rating)+'☆'.repeat(5-r.rating) : '–';
+    const dateStr  = r.date ? r.date.substring(0,10) : '–';
+    const body     = (r.body || r.title || '').trim();
+    const preview  = body.length > 80 ? body.substring(0,80)+'…' : body;
+    const srcKey   = r.source || 'web_snippet';
+    const pct      = r.priority_score || 0;
     const barColor = pct >= 75 ? '#FF5B5B' : pct >= 50 ? '#FFB347' : pct >= 25 ? '#7B5CFF' : '#00D4AA';
-
-    return `
-      <tr onclick="toggleExpand(this, ${JSON.stringify(body).replace(/'/g,"&#39;")})" data-idx="${i}">
-        <td><span class="source-badge source-${srcKey}">${srcLabels[srcKey]||srcKey}</span></td>
-        <td><span class="stars">${stars}</span></td>
-        <td><span class="sentiment-chip sentiment-${r.sentiment||'neutral'}">${{positive:'긍정',neutral:'중립',negative:'부정'}[r.sentiment||'neutral']}</span></td>
-        <td><span class="cat-badge">${r.category||'기타'}</span></td>
-        <td>
-          <div class="priority-bar">
-            <div class="priority-fill" style="width:${Math.max(pct,3)}px;max-width:60px;background:${barColor};"></div>
-            <span class="priority-num" style="color:${barColor}">${pct}</span>
-          </div>
-        </td>
-        <td><span class="priority-level-${r.priority_level||'낮음'}">${r.priority_level||'낮음'}</span></td>
-        <td><div class="text-preview">${escapeHtml(preview)}</div></td>
-        <td style="opacity:0.45;font-size:11px;white-space:nowrap;">${dateStr}</td>
-      </tr>`;
+    const ratingCell = showRating ? `<td><span class="stars">${stars}</span></td>` : '';
+    return `<tr onclick="${openFn}(${i})">
+      <td><span class="source-badge source-${srcKey}">${SRC_LABELS[srcKey]||srcKey}</span></td>
+      ${ratingCell}
+      <td><span class="sentiment-chip sentiment-${r.sentiment||'neutral'}">${sentMap[r.sentiment||'neutral']||'중립'}</span></td>
+      <td><span class="cat-badge">${r.category||'기타'}</span></td>
+      <td><div class="priority-bar">
+        <div class="priority-fill" style="width:${Math.max(pct,3)}px;max-width:60px;background:${barColor};"></div>
+        <span class="priority-num" style="color:${barColor}">${pct}</span>
+      </div></td>
+      <td><span class="priority-level-${r.priority_level||'낮음'}">${r.priority_level||'낮음'}</span></td>
+      <td><div class="text-preview">${escapeHtml(preview)}</div></td>
+      <td style="opacity:0.45;font-size:11px;white-space:nowrap;">${dateStr}</td>
+    </tr>`;
   }).join('');
 }
 
-function toggleExpand(row, fullText) {
-  const next = row.nextElementSibling;
-  if (next && next.classList.contains('expanded-row')) {
-    next.remove();
-    return;
-  }
-  // Close any open
-  document.querySelectorAll('.expanded-row').forEach(el => el.remove());
-  const tr = document.createElement('tr');
-  tr.className = 'expanded-row';
-  tr.innerHTML = `<td colspan="8"><div class="expanded-content">${escapeHtml(fullText)}</div></td>`;
-  row.insertAdjacentElement('afterend', tr);
-  tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function renderPagination(page, pages) {
-  const container = document.getElementById('pagination');
+function renderPaginationFor(containerId, page, pages, section) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
   if (pages <= 1) { container.innerHTML = ''; return; }
-
-  let html = `<button class="page-btn" onclick="loadReviews(${page-1})" ${page<=1?'disabled':''}>‹ 이전</button>`;
+  const fn = section === 'store' ? 'goStorePage' : 'goWebPage';
+  let html = `<button class="page-btn" onclick="${fn}(${page-1})" ${page<=1?'disabled':''}>‹ 이전</button>`;
   const range = 2;
   for (let i = Math.max(1,page-range); i <= Math.min(pages,page+range); i++) {
-    html += `<button class="page-btn ${i===page?'active':''}" onclick="loadReviews(${i})">${i}</button>`;
+    html += `<button class="page-btn ${i===page?'active':''}" onclick="${fn}(${i})">${i}</button>`;
   }
-  html += `<button class="page-btn" onclick="loadReviews(${page+1})" ${page>=pages?'disabled':''}>다음 ›</button>`;
+  html += `<button class="page-btn" onclick="${fn}(${page+1})" ${page>=pages?'disabled':''}>다음 ›</button>`;
   html += `<span class="page-info">${page} / ${pages} 페이지</span>`;
   container.innerHTML = html;
 }
+
+function goStorePage(p) { storePage = p; renderStoreReviews(); }
+function goWebPage(p)   { webPage = p;   renderWebReviews();   }
+
+// ── MODAL ──
+function openModal(review) {
+  if (!review) return;
+  const srcKey = review.source || 'web_snippet';
+  const badge = document.getElementById('modal-source-badge');
+  badge.className = `source-badge source-${srcKey}`;
+  badge.textContent = SRC_NAMES[srcKey] || srcKey;
+
+  const metaParts = [];
+  if (review.author) metaParts.push(review.author);
+  if (review.date)   metaParts.push(review.date.substring(0,10));
+  if (review.rating) metaParts.push('★'.repeat(review.rating)+'☆'.repeat(5-review.rating));
+  document.getElementById('modal-meta').textContent = metaParts.join('  ·  ');
+
+  const titleEl = document.getElementById('modal-review-title');
+  if (review.title && review.title.trim()) {
+    titleEl.textContent = review.title.trim();
+    titleEl.style.display = 'block';
+  } else {
+    titleEl.style.display = 'none';
+  }
+
+  document.getElementById('modal-body-text').textContent = (review.body || review.title || '').trim();
+
+  const linkEl = document.getElementById('modal-link');
+  if (review.link) {
+    linkEl.href = review.link;
+    linkEl.style.display = 'inline-flex';
+  } else {
+    linkEl.style.display = 'none';
+  }
+
+  document.getElementById('review-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('review-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function closeModalOverlay(e) {
+  if (e.target === document.getElementById('review-modal')) closeModal();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
 
 // ── UI HELPERS ──
 function showLoading(show, message) {

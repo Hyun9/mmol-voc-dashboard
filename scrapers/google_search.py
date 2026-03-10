@@ -1,10 +1,7 @@
-import time
-import random
+import os
 import hashlib
 import logging
 import requests
-from bs4 import BeautifulSoup
-from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
@@ -16,48 +13,31 @@ QUERIES = [
     "현대카드 M몰 불편",
 ]
 
-USER_AGENTS = [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
-]
+CSE_ENDPOINT = "https://www.googleapis.com/customsearch/v1"
 
 
 def _make_id(text: str) -> str:
     return hashlib.md5(text.encode()).hexdigest()[:16]
 
 
-def _scrape_duckduckgo(query: str, max_results: int = 5) -> list:
-    url = "https://html.duckduckgo.com/html/"
-    data = {"q": query, "kl": "kr-kr"}
-    headers = {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept-Language": "ko-KR,ko;q=0.9",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://duckduckgo.com/",
-    }
-
+def _scrape_google_cse(query: str, api_key: str, cx: str, num: int = 10) -> list:
     results = []
     try:
-        resp = requests.post(url, data=data, headers=headers, timeout=15)
-        soup = BeautifulSoup(resp.text, "lxml")
-
-        for result in soup.select(".result__body")[:max_results]:
-            title_el = result.select_one(".result__title")
-            snippet_el = result.select_one(".result__snippet")
-            link_el = result.select_one(".result__url")
-
-            title = title_el.get_text(strip=True) if title_el else ""
-            snippet = snippet_el.get_text(strip=True) if snippet_el else ""
-            link = link_el.get_text(strip=True) if link_el else ""
-
-            if not (title or snippet):
-                continue
-
+        resp = requests.get(
+            CSE_ENDPOINT,
+            params={"key": api_key, "cx": cx, "q": query, "num": num},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        for item in resp.json().get("items", []):
+            link = item.get("link", "")
+            title = item.get("title", "")
+            snippet = item.get("snippet", "")
             uid = _make_id(link or title or snippet)
             results.append({
                 "source": "web_snippet",
                 "id": uid,
-                "author": "",
+                "author": item.get("displayLink", ""),
                 "rating": None,
                 "title": title,
                 "body": snippet,
@@ -67,26 +47,31 @@ def _scrape_duckduckgo(query: str, max_results: int = 5) -> list:
                 "link": link,
             })
     except Exception as e:
-        logger.warning(f"DuckDuckGo scrape error for '{query}': {e}")
-
+        logger.warning(f"Google CSE error for '{query}': {e}")
     return results
 
 
-def scrape_web_snippets(queries: list = None, max_per_query: int = 5) -> list:
+def scrape_web_snippets(queries: list = None, max_per_query: int = 10) -> list:
     if queries is None:
         queries = QUERIES
 
+    api_key = os.environ.get("GOOGLE_CSE_API_KEY", "")
+    cx = os.environ.get("GOOGLE_CSE_CX", "")
+
+    if not api_key or not cx:
+        logger.warning("GOOGLE_CSE_API_KEY or GOOGLE_CSE_CX not set — skipping web snippets")
+        return []
+
     results = []
     seen = set()
-    logger.info("Scraping web snippets via DuckDuckGo...")
+    logger.info("Scraping web snippets via Google Custom Search API...")
 
     for query in queries:
-        items = _scrape_duckduckgo(query, max_results=max_per_query)
+        items = _scrape_google_cse(query, api_key, cx, num=max_per_query)
         for item in items:
             if item["id"] not in seen:
                 seen.add(item["id"])
                 results.append(item)
-        time.sleep(random.uniform(1.5, 3.0))
 
     logger.info(f"Web snippets: {len(results)} collected")
     return results

@@ -31,7 +31,7 @@ def _normalize(r: dict) -> dict:
 
 
 def scrape_play_store(app_id: str = APP_ID, lang: str = "ko",
-                      country: str = "kr", count: int = 200) -> list:
+                      country: str = "kr", count: int = 500) -> list:
     try:
         from google_play_scraper import reviews, Sort
     except ImportError:
