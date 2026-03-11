@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>현대카드 M몰 VOC Dashboard</title>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   /* ── RESET & BASE ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,7 +13,7 @@
 
   body {
     min-height: 100vh;
-    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, #0a0818 0%, #150d2e 25%, #1e1040 50%, #0d1a3e 75%, #071228 100%);
     background-attachment: fixed;
     color: rgba(255,255,255,0.9);
@@ -69,16 +68,17 @@
   /* ── HEADER ── */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(10,8,24,0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     border-bottom: 1px solid rgba(255,255,255,0.08);
     padding: 16px 32px;
     display: flex; align-items: center; justify-content: space-between;
     gap: 16px;
+    opacity: 0.7;
   }
   .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-title { font-size: 13px; font-weight: 600; opacity: 0.95; }
+  .header-title { font-size: 18px; font-weight: 600; opacity: 0.95; }
   .header-right { display: flex; align-items: center; gap: 16px; }
   .status-badge {
     display: flex; align-items: center; gap: 8px;
@@ -115,21 +115,15 @@
   /* ── KPI CARDS ── */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px; margin-bottom: 28px;
   }
-  @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 700px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
 
   .kpi-card {
     padding: 24px 20px;
-    border-top: 2px solid transparent;
   }
-  .kpi-card:nth-child(1) { border-top-color: #7B5CFF; }
-  .kpi-card:nth-child(2) { border-top-color: #FFB347; }
-  .kpi-card:nth-child(3) { border-top-color: #FF5B5B; }
-  .kpi-card:nth-child(4) { border-top-color: #E83FA0; }
-  .kpi-card:nth-child(5) { border-top-color: #00D4AA; }
   .kpi-label { font-size: 11px; font-weight: 500; opacity: 0.5; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px; }
   .kpi-value { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
   .kpi-sub { font-size: 12px; opacity: 0.45; }
@@ -396,12 +390,6 @@
     <div class="kpi-sub">1~2점 또는 부정 VOC</div>
   </div>
   <div class="glass kpi-card">
-    <div class="kpi-icon">🚨</div>
-    <div class="kpi-label">긴급 이슈</div>
-    <div class="kpi-value" id="kpi-urgent">–</div>
-    <div class="kpi-sub">우선순위 점수 75점+</div>
-  </div>
-  <div class="glass kpi-card">
     <div class="kpi-icon">📅</div>
     <div class="kpi-label">최근 7일 리뷰</div>
     <div class="kpi-value" id="kpi-recent">–</div>
@@ -501,7 +489,7 @@
 </div>
 
 <!-- Web Search Section -->
-<div class="section-title" style="margin-top:32px;">웹 서치</div>
+<div class="section-title" style="margin-top:32px;">네이버 리뷰</div>
 <div class="glass table-card">
   <div class="table-header">
     <div style="font-size:14px;font-weight:600;opacity:0.85;">네이버 블로그 · 웹 검색
@@ -576,7 +564,7 @@ let allData = null;
 let pollingInterval = null;
 let storePage = 1;
 let webPage = 1;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 let _storePagedReviews = [];
 let _webPagedReviews = [];
 
@@ -723,7 +711,6 @@ function renderKPIs(s) {
   document.getElementById('kpi-total-sub').textContent = formatSourceCounts(s.by_source);
   document.getElementById('kpi-rating').textContent = s.avg_rating ? s.avg_rating.toFixed(1) + ' ★' : '–';
   document.getElementById('kpi-negative').textContent = (s.negative_pct || 0) + '%';
-  document.getElementById('kpi-urgent').textContent = (s.urgent_count || 0).toLocaleString();
   document.getElementById('kpi-recent').textContent = '+' + (s.recent_7d || 0);
 }
 
