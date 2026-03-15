@@ -56,7 +56,8 @@ def scrape_web_snippets(queries: list = None, display: int = 20) -> list:
                 title = _strip_html(item.get("title", ""))
                 body = _strip_html(item.get("description", ""))
                 uid = _make_id(link or title)
-                if uid not in seen and (title or body):
+                is_blog = "blog.naver.com" in link
+                if uid not in seen and (title or body) and not is_blog:
                     seen.add(uid)
                     results.append({
                         "source": "web_snippet",

@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -83,6 +83,7 @@ def _run_full_scrape():
     from scrapers.play_store import scrape_play_store
     from scrapers.app_store import scrape_app_store
     from scrapers.naver import scrape_naver_blogs
+    from scrapers.naver_cafe import scrape_naver_cafe
     from scrapers.google_search import scrape_web_snippets
     from processors.aggregator import build_full_dataset
 
@@ -101,6 +102,7 @@ def _run_full_scrape():
         ("Google Play Store", scrape_play_store, "google_play"),
         ("App Store", scrape_app_store, "app_store"),
         ("네이버 블로그", scrape_naver_blogs, "naver_blog"),
+        ("네이버 카페", scrape_naver_cafe, "naver_cafe"),
         ("웹 검색", scrape_web_snippets, "web_snippet"),
     ]
 
@@ -120,6 +122,8 @@ def _run_full_scrape():
             durations[src_key] = elapsed
             errors.append(f"{name}: {str(e)}")
             logger.error(f"{name} failed: {e}")
+
+    logger.info(f"전체 리뷰 수집 완료: {len(all_reviews)}건 (날짜 필터 없음)")
 
     scrape_status["progress"] = "데이터 처리 중..."
     try:
@@ -290,6 +294,156 @@ def get_categories():
     return jsonify({"categories": cats})
 
 
+def _fetch_url_text(url: str) -> str:
+    """URL 페이지를 크롤링해서 본문 텍스트를 추출한다."""
+    import requests as req
+    from bs4 import BeautifulSoup
+
+    if not url:
+        return ""
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/121.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.9",
+        "Referer": "https://www.naver.com/",
+    }
+
+    try:
+        # 네이버 블로그: 모바일 버전이 파싱 쉬움
+        fetch_url = url
+        if "blog.naver.com" in url:
+            # /PostView.naver 형태로 변환
+            import re as _re
+            m = _re.search(r"blog\.naver\.com/([^/?#]+)/(\d+)", url)
+            if m:
+                fetch_url = f"https://blog.naver.com/PostView.naver?blogId={m.group(1)}&logNo={m.group(2)}&redirect=Dlog&widgetTypeCall=true"
+
+        resp = req.get(fetch_url, headers=headers, timeout=12)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # 불필요한 태그 제거
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside", "iframe"]):
+            tag.decompose()
+
+        # 네이버 블로그 본문 셀렉터 (우선순위 순)
+        naver_selectors = [
+            ".se-main-container",   # Smart Editor 3 (최신)
+            "#postViewArea",        # 구버전
+            ".post-view",
+            ".post_ct",
+            "#post-view",
+            ".se_component_wrap",
+        ]
+        # 일반 사이트 셀렉터
+        general_selectors = [
+            "article", "main",
+            ".article-body", ".post-body",
+            ".content", "#content",
+            ".entry-content", ".blog-content",
+        ]
+
+        all_selectors = naver_selectors + general_selectors
+        for selector in all_selectors:
+            el = soup.select_one(selector)
+            if el:
+                text = el.get_text(separator="\n", strip=True)
+                if len(text) > 100:
+                    return text[:4000]
+
+        # 최후 수단: 전체 텍스트
+        text = soup.get_text(separator="\n", strip=True)
+        return text[:4000]
+
+    except Exception as e:
+        logger.warning(f"URL 크롤링 실패 ({url}): {e}")
+        return ""
+
+
+
+@app.route("/api/page-title", methods=["POST"])
+def get_page_title():
+    import re as _re
+    import requests as req
+    from bs4 import BeautifulSoup
+    data = request.json or {}
+    url = (data.get("url") or "").strip()
+    if not url:
+        return jsonify({"title": ""})
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.9",
+        "Referer": "https://www.naver.com/",
+    }
+    try:
+        fetch_url = url
+        is_naver = False
+        m = _re.search(r"blog\.naver\.com/([^/?#]+)/(\d+)", url)
+        if m:
+            is_naver = True
+            fetch_url = (f"https://blog.naver.com/PostView.naver"
+                         f"?blogId={m.group(1)}&logNo={m.group(2)}&redirect=Dlog&widgetTypeCall=true")
+        resp = req.get(fetch_url, headers=headers, timeout=8)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        if is_naver:
+            for sel in [".se-title-text", ".pcol1", "h3.title", ".itemSubjectBoldfont"]:
+                el = soup.select_one(sel)
+                if el:
+                    t = el.get_text(strip=True)
+                    if t:
+                        return jsonify({"title": t})
+        og = soup.find("meta", property="og:title")
+        if og and og.get("content"):
+            return jsonify({"title": og["content"].strip()})
+        t = soup.find("title")
+        if t:
+            return jsonify({"title": t.get_text(strip=True)})
+    except Exception as e:
+        logger.warning(f"page-title fetch 실패 ({url}): {e}")
+    return jsonify({"title": ""})
+
+
+@app.route("/api/summarize", methods=["POST"])
+def summarize_review():
+    body = request.json or {}
+    url = (body.get("url") or "").strip()
+    fallback_text = (body.get("text") or "").strip()
+
+    # URL 크롤링 시도
+    text = _fetch_url_text(url) if url else ""
+    if not text:
+        text = fallback_text
+    if not text:
+        return jsonify({"summary": ""})
+
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if api_key:
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=f"다음 웹페이지 내용을 한국어로 4줄 이내로 핵심만 요약해줘. 불필요한 설명 없이 요약문만 출력해:\n\n{text[:3000]}"
+            )
+            summary = response.text.strip()
+            return jsonify({"summary": summary})
+        except Exception as e:
+            logger.warning(f"Gemini summarize failed: {e}")
+
+    # Fallback: 첫 2문장 추출
+    import re
+    sentences = re.split(r'(?<=[.!?。\n])\s+', text.strip())
+    sentences = [s.strip() for s in sentences if len(s.strip()) > 10]
+    summary = " ".join(sentences[:2]) if sentences else text[:150]
+    if len(summary) > 150:
+        summary = summary[:150].rsplit(" ", 1)[0] + "…"
+    return jsonify({"summary": summary})
+
+
 @app.route("/api/trends")
 def get_trends():
     if not CACHE_FILE.exists():
@@ -309,4 +463,4 @@ if __name__ == "__main__":
         logger.info("Cache found — using existing data. Use /api/refresh to update.")
 
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=False, host="0.0.0.0", port=port, threaded=True)
+    app.run(debug=True, host="0.0.0.0", port=port, threaded=True, use_reloader=False)

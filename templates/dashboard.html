@@ -75,7 +75,7 @@
     padding: 16px 32px;
     display: flex; align-items: center; justify-content: space-between;
     gap: 16px;
-    opacity: 0.7;
+    opacity: 1;
   }
   .header-left { display: flex; align-items: center; gap: 16px; }
   .header-title { font-size: 18px; font-weight: 600; opacity: 0.95; }
@@ -144,21 +144,31 @@
   /* ── PRIORITY TABLE ── */
   .table-card { padding: 24px; margin-bottom: 20px; }
   .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .table-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+  .table-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto; justify-content: flex-end; }
 
   select, input[type="text"] {
     background: rgba(255,255,255,0.07);
     border: 1px solid rgba(255,255,255,0.12);
     color: rgba(255,255,255,0.85);
-    padding: 7px 12px; border-radius: 8px;
+    padding: 7px 32px 7px 12px; border-radius: 8px;
     font-size: 12px; font-family: inherit; cursor: pointer;
     transition: border-color 0.2s;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    min-width: 120px;
+  }
+  input[type="text"] {
+    background-image: none;
+    padding: 7px 12px;
+    min-width: auto;
   }
   select:hover, input[type="text"]:hover { border-color: rgba(123,92,255,0.5); }
   select:focus, input[type="text"]:focus { outline: none; border-color: #7B5CFF; }
   select option { background: #1e1040; color: #fff; }
 
-  .reviews-table { width: 100%; border-collapse: collapse; }
+  .reviews-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .reviews-table th {
     text-align: left; padding: 10px 12px;
     font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
@@ -185,6 +195,7 @@
   .source-google_play { background: rgba(52,168,83,0.2); color: #34A853; border: 1px solid rgba(52,168,83,0.3); }
   .source-app_store { background: rgba(0,120,212,0.2); color: #60B2FF; border: 1px solid rgba(0,120,212,0.3); }
   .source-naver_blog { background: rgba(3,199,90,0.2); color: #03C75A; border: 1px solid rgba(3,199,90,0.3); }
+  .source-naver_cafe { background: rgba(0,176,240,0.2); color: #00B0F0; border: 1px solid rgba(0,176,240,0.3); }
   .source-web_snippet { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
 
   .cat-badge {
@@ -218,8 +229,8 @@
   .priority-level-낮음 { background: rgba(0,212,170,0.1); color: rgba(0,212,170,0.7); border: 1px solid rgba(0,212,170,0.2); border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 700; }
 
   .text-preview {
-    max-width: 320px; overflow: hidden;
-    display: -webkit-box; -webkit-line-clamp: 2;
+    max-width: 520px; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 1;
     -webkit-box-orient: vertical; opacity: 0.7;
     font-size: 12px; line-height: 1.5;
   }
@@ -237,7 +248,7 @@
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 20px; padding: 32px;
-    max-width: 680px; width: 100%; max-height: 82vh; overflow-y: auto;
+    max-width: 680px; width: 100%; max-height: 92vh; overflow-y: auto;
     color: rgba(255,255,255,0.9);
     box-shadow: 0 24px 64px rgba(0,0,0,0.6); position: relative;
   }
@@ -254,6 +265,17 @@
   .modal-meta { font-size: 12px; opacity: 0.45; }
   .modal-review-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; line-height: 1.5; }
   .modal-body { font-size: 14px; line-height: 1.85; opacity: 0.85; white-space: pre-wrap; word-break: break-word; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); }
+  .modal-summary {
+    margin-bottom: 16px; padding: 14px 16px;
+    background: rgba(123,92,255,0.08); border: 1px solid rgba(123,92,255,0.2);
+    border-radius: 10px; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.85);
+  }
+  .modal-summary-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    color: rgba(123,92,255,0.9); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .modal-summary-text { opacity: 0.9; }
+  .modal-summary-loading { opacity: 0.4; font-style: italic; }
   .modal-link {
     display: inline-flex; align-items: center; gap: 6px;
     color: #B39DFF; font-size: 13px; text-decoration: none;
@@ -276,22 +298,33 @@
   .page-info { font-size: 12px; opacity: 0.4; }
 
   /* ── CATEGORY CARDS ── */
-  .cat-priority-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-  @media (max-width: 900px) { .cat-priority-grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .cat-priority-grid { grid-template-columns: 1fr; } }
-
-  .cat-card { padding: 20px; }
-  .cat-card-rank { font-size: 28px; font-weight: 800; opacity: 0.15; position: absolute; top: 14px; right: 18px; }
-  .cat-card-name { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
-  .cat-card-stats { display: flex; gap: 16px; margin-bottom: 14px; }
-  .cat-stat { font-size: 11px; opacity: 0.5; }
-  .cat-stat strong { font-size: 18px; font-weight: 700; opacity: 1; display: block; }
-  .cat-keywords { display: flex; flex-wrap: wrap; gap: 6px; }
-  .cat-kw {
-    font-size: 10px; padding: 3px 8px; border-radius: 5px;
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-    opacity: 0.7;
+  /* cat list */
+  /* 이슈 분석 테이블 */
+  .cat-table { width: 100%; border-collapse: collapse; }
+  .cat-table th {
+    text-align: left; padding: 8px 10px;
+    font-size: 11px; font-weight: 600; opacity: 0.4; letter-spacing: 0.5px;
+    text-transform: uppercase; white-space: nowrap;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
+  .cat-table td { padding: 13px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+  .cat-table tr:last-child td { border-bottom: none; }
+  .cat-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .cat-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0; }
+  .cat-name-cell { display: flex; align-items: center; font-weight: 600; font-size: 13px; }
+  .cat-kw {
+    font-size: 10px; padding: 2px 7px; border-radius: 4px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+  }
+  .priority-tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em;
+  }
+  .priority-urgent { background: rgba(255,60,60,0.25);  color: #FF3C3C; border: 1px solid rgba(255,60,60,0.4); }
+  .priority-high   { background: rgba(255,91,91,0.2);   color: #FF5B5B; border: 1px solid rgba(255,91,91,0.3); }
+  .priority-mid    { background: rgba(255,179,71,0.2);  color: #FFB347; border: 1px solid rgba(255,179,71,0.3); }
+  .priority-low    { background: rgba(0,212,170,0.2);   color: #00D4AA; border: 1px solid rgba(0,212,170,0.3); }
 
   /* ── LOADING OVERLAY ── */
   #loading-overlay {
@@ -381,7 +414,7 @@
     <div class="kpi-icon">⭐</div>
     <div class="kpi-label">평균 평점</div>
     <div class="kpi-value" id="kpi-rating">–</div>
-    <div class="kpi-sub" id="kpi-rating-sub">앱스토어 / 플레이스토어</div>
+    <div class="kpi-sub" id="kpi-rating-sub">App Store / Play Store</div>
   </div>
   <div class="glass kpi-card">
     <div class="kpi-icon">😤</div>
@@ -411,23 +444,21 @@
   </div>
 </div>
 
-<!-- Chart Row 3: Category Donut + Priority Ranking -->
-<div class="chart-row chart-row-2" style="margin-bottom:20px;">
-  <div class="glass chart-card">
-    <div class="chart-title">카테고리별 VOC 분포</div>
+<!-- Category Analysis: Donut LEFT + Issue List RIGHT -->
+<div style="display:flex;gap:20px;margin-bottom:20px;align-items:stretch;">
+  <div class="glass chart-card" style="flex:1;padding:24px;min-width:0;">
+    <div class="chart-title">VOC 분포</div>
     <div class="chart-sub">주요 이슈 유형 비율</div>
-    <div class="chart-wrap" id="chart-cat-donut" style="height:300px;"></div>
+    <div style="display:flex;align-items:center;height:360px;">
+      <div class="chart-wrap" id="chart-cat-donut" style="flex:1;height:100%;"></div>
+      <div id="cat-donut-legend" style="flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:120px;padding-left:8px;"></div>
+    </div>
   </div>
-  <div class="glass chart-card">
-    <div class="chart-title">카테고리별 우선순위</div>
-    <div class="chart-sub">평균 우선순위 점수 기준 (높을수록 시급)</div>
-    <div class="chart-wrap" id="chart-cat-priority" style="height:300px;"></div>
+  <div class="glass" style="flex:1;padding:24px;min-width:0;">
+    <div class="chart-title" style="margin-bottom:16px;">VOC 이슈 분석</div>
+    <div id="cat-cards"></div>
   </div>
 </div>
-
-<!-- Category Detail Cards -->
-<div class="section-title">카테고리별 이슈 분석</div>
-<div class="cat-priority-grid" id="cat-cards"></div>
 
 <!-- Store Reviews Section -->
 <div class="section-title">스토어 리뷰 목록</div>
@@ -437,8 +468,7 @@
       <span id="store-count-badge" style="font-size:12px;opacity:0.4;margin-left:8px;font-weight:400;"></span>
     </div>
     <div class="table-filters">
-      <input type="text" id="store-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyStoreFilters()">
-      <select id="store-filter-source" onchange="applyStoreFilters()">
+      <select id="store-filter-source" style="width:100px" onchange="applyStoreFilters()">
         <option value="">모든 소스</option>
         <option value="google_play">Google Play</option>
         <option value="app_store">App Store</option>
@@ -453,13 +483,13 @@
         <option value="로그인/인증">로그인/인증</option>
         <option value="기타">기타</option>
       </select>
-      <select id="store-filter-sentiment" onchange="applyStoreFilters()">
+      <select id="store-filter-sentiment" style="width:100px" onchange="applyStoreFilters()">
         <option value="">모든 감성</option>
         <option value="negative">부정</option>
         <option value="neutral">중립</option>
         <option value="positive">긍정</option>
       </select>
-      <select id="store-filter-rating" onchange="applyStoreFilters()">
+      <select id="store-filter-rating" style="width:100px" onchange="applyStoreFilters()">
         <option value="">모든 평점</option>
         <option value="1">★ 1점</option>
         <option value="2">★★ 2점</option>
@@ -467,19 +497,27 @@
         <option value="4">★★★★ 4점</option>
         <option value="5">★★★★★ 5점</option>
       </select>
-      <select id="store-filter-sort" onchange="applyStoreFilters()">
-        <option value="priority">우선순위순</option>
+      <select id="store-filter-sort" style="width:100px" onchange="applyStoreFilters()">
         <option value="date">최신순</option>
+        <option value="priority">우선순위순</option>
         <option value="rating">평점순</option>
       </select>
+      <select id="store-filter-period" style="width:100px" onchange="applyStoreFilters()">
+        <option value="">전체 기간</option>
+        <option value="30">1개월</option>
+        <option value="90">3개월</option>
+        <option value="180">6개월</option>
+        <option value="365">1년</option>
+      </select>
+      <input type="text" id="store-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyStoreFilters()">
     </div>
   </div>
   <div style="overflow-x:auto;">
     <table class="reviews-table">
       <thead>
         <tr>
-          <th>소스</th><th>평점</th><th>감성</th><th>카테고리</th>
-          <th>우선순위</th><th>레벨</th><th>내용</th><th>날짜</th>
+          <th style="width:100px">소스</th><th style="width:90px">평점</th><th style="width:70px">감성</th><th style="width:90px">카테고리</th>
+          <th style="width:90px">우선순위</th><th>내용</th><th style="width:80px">날짜</th>
         </tr>
       </thead>
       <tbody id="store-reviews-tbody"></tbody>
@@ -492,14 +530,14 @@
 <div class="section-title" style="margin-top:32px;">네이버 리뷰</div>
 <div class="glass table-card">
   <div class="table-header">
-    <div style="font-size:14px;font-weight:600;opacity:0.85;">네이버 블로그 · 웹 검색
+    <div style="font-size:14px;font-weight:600;opacity:0.85;">네이버 블로그 · 카페 · 웹 검색
       <span id="web-count-badge" style="font-size:12px;opacity:0.4;margin-left:8px;font-weight:400;"></span>
     </div>
     <div class="table-filters">
-      <input type="text" id="web-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyWebFilters()">
-      <select id="web-filter-source" onchange="applyWebFilters()">
+      <select id="web-filter-source" style="width:100px" onchange="applyWebFilters()">
         <option value="">모든 소스</option>
         <option value="naver_blog">네이버 블로그</option>
+        <option value="naver_cafe">네이버 카페</option>
         <option value="web_snippet">웹 검색</option>
       </select>
       <select id="web-filter-category" onchange="applyWebFilters()">
@@ -512,24 +550,32 @@
         <option value="로그인/인증">로그인/인증</option>
         <option value="기타">기타</option>
       </select>
-      <select id="web-filter-sentiment" onchange="applyWebFilters()">
+      <select id="web-filter-sentiment" style="width:100px" onchange="applyWebFilters()">
         <option value="">모든 감성</option>
         <option value="negative">부정</option>
         <option value="neutral">중립</option>
         <option value="positive">긍정</option>
       </select>
-      <select id="web-filter-sort" onchange="applyWebFilters()">
-        <option value="priority">우선순위순</option>
+      <select id="web-filter-sort" style="width:100px" onchange="applyWebFilters()">
         <option value="date">최신순</option>
+        <option value="priority">우선순위순</option>
       </select>
+      <select id="web-filter-period" style="width:100px" onchange="applyWebFilters()">
+        <option value="">전체 기간</option>
+        <option value="30">1개월</option>
+        <option value="90">3개월</option>
+        <option value="180">6개월</option>
+        <option value="365">1년</option>
+      </select>
+      <input type="text" id="web-filter-search" placeholder="🔍 검색..." style="width:140px;" oninput="applyWebFilters()">
     </div>
   </div>
   <div style="overflow-x:auto;">
     <table class="reviews-table">
       <thead>
         <tr>
-          <th>소스</th><th>감성</th><th>카테고리</th>
-          <th>우선순위</th><th>레벨</th><th>내용</th><th>날짜</th>
+          <th style="width:100px">소스</th><th style="width:70px">감성</th><th style="width:90px">카테고리</th>
+          <th style="width:130px">우선순위</th><th>내용</th><th style="width:180px">원문</th><th style="width:80px">날짜</th>
         </tr>
       </thead>
       <tbody id="web-reviews-tbody"></tbody>
@@ -551,7 +597,9 @@
     </div>
     <div class="modal-review-title" id="modal-review-title" style="display:none;"></div>
     <div class="modal-body" id="modal-body-text"></div>
-    <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener" style="display:none;">원문 보기 →</a>
+    <div style="display:flex; justify-content:flex-end;">
+      <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener" style="display:none;">원문 보기 →</a>
+    </div>
   </div>
 </div>
 
@@ -565,6 +613,7 @@ let pollingInterval = null;
 let storePage = 1;
 let webPage = 1;
 const PAGE_SIZE = 10;
+const WEB_PAGE_SIZE = 10;
 let _storePagedReviews = [];
 let _webPagedReviews = [];
 
@@ -717,10 +766,12 @@ function renderKPIs(s) {
 function formatSourceCounts(by_source) {
   if (!by_source) return '';
   const parts = [];
-  const labels = { google_play: 'Play', app_store: 'AppStore', naver_blog: 'Naver', web_snippet: 'Web' };
-  for (const [k, v] of Object.entries(by_source)) {
-    if (v.count > 0) parts.push(`${labels[k] || k}: ${v.count}`);
-  }
+  const as = by_source.app_store?.count || 0;
+  const gp = by_source.google_play?.count || 0;
+  const naver = (by_source.naver_blog?.count||0) + (by_source.naver_cafe?.count||0) + (by_source.web_snippet?.count||0);
+  if (as > 0) parts.push(`App Store: ${as}`);
+  if (gp > 0) parts.push(`Play Store: ${gp}`);
+  if (naver > 0) parts.push(`Naver: ${naver}`);
   return parts.join(' · ');
 }
 
@@ -755,20 +806,23 @@ function renderCharts(data) {
     margin: { t: 10, b: 30, l: 90, r: 50 },
   }, { responsive: true, displayModeBar: false });
 
-  // 2. Sentiment by Source
+  // 2. Sentiment by Source (네이버 블로그 + 카페 + 웹검색 → 네이버 리뷰)
   const bySource = s.by_source || {};
-  const sourceKeys = ['google_play','app_store','naver_blog','web_snippet'];
-  const sourceLabels = ['Google Play','App Store','네이버 블로그','웹 검색'];
   const reviews = data.reviews || [];
-  const sentBySource = {};
-  for (const k of sourceKeys) { sentBySource[k] = { positive:0, neutral:0, negative:0 }; }
+  const sentBySource = { google_play:{positive:0,neutral:0,negative:0}, app_store:{positive:0,neutral:0,negative:0}, naver:{positive:0,neutral:0,negative:0} };
   for (const r of reviews) {
     const src = r.source;
     const sent = r.sentiment;
-    if (sentBySource[src] && sent) sentBySource[src][sent]++;
+    if (!sent) continue;
+    if (src === 'google_play' || src === 'app_store') sentBySource[src][sent]++;
+    else if (['naver_blog','naver_cafe','web_snippet'].includes(src)) sentBySource['naver'][sent]++;
   }
-  const existingKeys = sourceKeys.filter(k => (bySource[k] || {}).count > 0);
-  const existingLabels = existingKeys.map((k,i) => sourceLabels[sourceKeys.indexOf(k)]);
+  const naverTotal = (bySource.naver_blog?.count||0) + (bySource.naver_cafe?.count||0) + (bySource.web_snippet?.count||0);
+  const mergedBySource = { google_play: bySource.google_play, app_store: bySource.app_store, naver: { count: naverTotal } };
+  const sourceKeys = ['google_play','app_store','naver'];
+  const sourceLabels = ['Google Play','App Store','네이버 리뷰'];
+  const existingKeys = sourceKeys.filter(k => (mergedBySource[k] || {}).count > 0);
+  const existingLabels = existingKeys.map(k => sourceLabels[sourceKeys.indexOf(k)]);
 
   Plotly.newPlot('chart-sentiment-source', [
     { name:'긍정', type:'bar', x: existingLabels, y: existingKeys.map(k => sentBySource[k].positive), marker:{color:'rgba(0,212,170,0.7)'}, hovertemplate:'%{x} 긍정: %{y}건<extra></extra>' },
@@ -782,59 +836,80 @@ function renderCharts(data) {
     margin: { t: 10, b: 60, l: 40, r: 10 },
   }, { responsive: true, displayModeBar: false });
 
-  // 4. Category Donut
+  // 4. Category Donut (이슈 분석 테이블과 동일한 순서: priority_rank 기준)
   const byCat = s.by_category || {};
-  const catNames = Object.keys(byCat).filter(k => (byCat[k].count || 0) > 0);
+  const catNames = Object.entries(byCat)
+    .filter(([,v]) => (v.count || 0) > 0)
+    .sort(([,a],[,b]) => (a.priority_rank||999) - (b.priority_rank||999))
+    .map(([k]) => k);
   const catCounts = catNames.map(k => byCat[k].count);
-  const catColors = ['#7B5CFF','#E83FA0','#FF5B5B','#FFB347','#00D4AA','#60B2FF','rgba(255,255,255,0.3)'];
+  const donutColors = catNames.map(k => CAT_COLORS[k] || 'rgba(255,255,255,0.3)');
 
   if (catNames.length > 0) {
+    const totalVOC = catCounts.reduce((a,b)=>a+b,0);
     Plotly.newPlot('chart-cat-donut', [{
-      type:'pie', hole:0.55,
+      type:'pie', hole:0.58, sort: false, direction:'clockwise',
       labels: catNames, values: catCounts,
-      marker: { colors: catColors.slice(0, catNames.length), line:{color:'rgba(0,0,0,0.3)',width:2} },
+      domain: {x:[0, 1], y:[0.04, 0.96]},
+      marker: { colors: donutColors, line:{color:'rgba(0,0,0,0.3)',width:2} },
       textinfo:'percent',
+      textposition:'auto',
       hovertemplate:'%{label}: %{value}건 (%{percent})<extra></extra>',
-      textfont:{size:10, color:'rgba(255,255,255,0.9)'},
+      textfont:{size:13, color:'rgba(255,255,255,0.95)'},
     }], {
       ...TRANSPARENT_LAYOUT,
-      margin:{t:10,b:60,l:10,r:10},
-      legend:{font:{size:10},bgcolor:'rgba(0,0,0,0)',orientation:'v',x:1.02,y:0.5},
-      showlegend:true,
-      annotations:[{ text:`<b>${catCounts.reduce((a,b)=>a+b,0)}</b><br>VOC`, x:0.5, y:0.5, showarrow:false, font:{size:13,color:'rgba(255,255,255,0.7)'} }],
+      margin:{t:30,b:30,l:30,r:30},
+      showlegend: false,
+      annotations:[
+        { text:`<b>${totalVOC}</b>`, x:0.5, y:0.54, showarrow:false, font:{size:20,color:'rgba(255,255,255,0.85)'}, xanchor:'center' },
+        { text:'VOC', x:0.5, y:0.46, showarrow:false, font:{size:12,color:'rgba(255,255,255,0.5)'}, xanchor:'center' },
+      ],
     }, { responsive:true, displayModeBar:false });
+
+    // 커스텀 HTML 범례
+    document.getElementById('cat-donut-legend').innerHTML = catNames.map(name => `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:${CAT_COLORS[name] || 'rgba(255,255,255,0.3)'};flex-shrink:0;display:inline-block;"></span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.8);white-space:nowrap;">${name}</span>
+      </div>`).join('');
   }
 
-  // 5. Category Priority Bar
-  const sortedCats = catNames
-    .map(k => ({ name: k, avg: (byCat[k].avg_priority||0), neg: (byCat[k].negative_pct||0) }))
-    .sort((a,b) => b.avg - a.avg);
+}
 
-  if (sortedCats.length > 0) {
-    Plotly.newPlot('chart-cat-priority', [{
-      type:'bar', orientation:'h',
-      y: sortedCats.map(c=>c.name).reverse(),
-      x: sortedCats.map(c=>c.avg).reverse(),
-      marker:{
-        color: sortedCats.map(c => {
-          const score = c.avg;
-          if (score >= 75) return 'rgba(255,91,91,0.8)';
-          if (score >= 50) return 'rgba(255,179,71,0.8)';
-          if (score >= 25) return 'rgba(123,92,255,0.8)';
-          return 'rgba(0,212,170,0.6)';
-        }).reverse(),
-      },
-      text: sortedCats.map(c => `${c.avg.toFixed(0)}점`).reverse(),
-      textposition:'outside',
-      hovertemplate:'%{y}<br>평균 우선순위: %{x:.1f}점<extra></extra>',
-    }], {
-      ...TRANSPARENT_LAYOUT,
-      xaxis:{ gridcolor:'rgba(255,255,255,0.06)', color:'rgba(255,255,255,0.4)', range:[0,110], tickfont:{size:10} },
-      yaxis:{ color:'rgba(255,255,255,0.6)', tickfont:{size:10}, automargin:true },
-      showlegend:false,
-      margin:{t:10,b:30,l:100,r:50},
-    }, { responsive:true, displayModeBar:false });
-  }
+const CAT_COLORS = {
+  '앱 성능/속도': '#7B5CFF',
+  'UI/UX':       '#E83FA0',
+  '포인트/혜택': '#FF5B5B',
+  '배송/주문':   '#FFB347',
+  '고객서비스':  '#00D4AA',
+  '로그인/인증': '#60B2FF',
+  '기타':        'rgba(255,255,255,0.3)',
+};
+
+const CAT_HIDDEN_TAGS = {
+  '포인트/혜택': ['포인트', '사용'],
+  '기타': ['너무', '제발', '쓰게', '너무비싸다'],
+};
+const CAT_EXTRA_TAGS = {
+  '기타': ['상품', '수량'],
+};
+const CAT_KW_REPLACE = {
+  '앱 성능/속도': { '느려': '느려요' },
+  '고객서비스':   { '개선': '응대' },
+};
+
+function negPctColor(pct) {
+  if (pct >= 70) return '#FF3C3C';
+  if (pct >= 50) return '#FF5B5B';
+  if (pct >= 25) return '#FFB347';
+  return '#00D4AA';
+}
+
+function priorityTag(neg_pct) {
+  if (neg_pct >= 70) return '<span class="priority-tag priority-urgent">긴급</span>';
+  if (neg_pct >= 50) return '<span class="priority-tag priority-high">높음</span>';
+  if (neg_pct >= 25) return '<span class="priority-tag priority-mid">중간</span>';
+  return '<span class="priority-tag priority-low">낮음</span>';
 }
 
 function renderCategoryCards(byCat) {
@@ -843,28 +918,57 @@ function renderCategoryCards(byCat) {
     .filter(([,v]) => v.count > 0)
     .sort(([,a],[,b]) => (a.priority_rank||999) - (b.priority_rank||999));
 
-  const catColors = ['#7B5CFF','#E83FA0','#FF5B5B','#FFB347','#00D4AA','#60B2FF','rgba(255,255,255,0.3)'];
-  container.innerHTML = cats.map(([name, info], i) => `
-    <div class="glass cat-card" style="border-top:2px solid ${catColors[i%catColors.length]}">
-      <div class="cat-card-rank">#${info.priority_rank}</div>
-      <div class="cat-card-name">${name}</div>
-      <div class="cat-card-stats">
-        <div class="cat-stat"><strong>${info.count}</strong>건</div>
-        <div class="cat-stat"><strong style="color:#FF5B5B">${info.negative_pct||0}%</strong>부정</div>
-        <div class="cat-stat"><strong style="color:${catColors[i%catColors.length]}">${info.avg_priority||0}</strong>점</div>
-      </div>
-      <div class="cat-keywords">
-        ${(info.top_issues||[]).slice(0,5).map(kw => `<span class="cat-kw">${kw}</span>`).join('')}
-      </div>
-    </div>
-  `).join('');
+  container.innerHTML = `
+    <table class="cat-table">
+      <colgroup>
+        <col style="width:20%">
+        <col>
+        <col style="width:8%">
+        <col style="width:12%">
+        <col style="width:16%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>키워드</th>
+          <th style="text-align:right">건수</th>
+          <th style="text-align:right">부정 비율</th>
+          <th style="text-align:right">우선순위</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${cats.map(([name, info]) => {
+          const hidden = CAT_HIDDEN_TAGS[name] || [];
+          const extra  = CAT_EXTRA_TAGS[name]  || [];
+          let keywords = (info.top_issues||[]).filter(kw => !hidden.includes(kw));
+          for (const t of extra) { if (!keywords.includes(t)) keywords.push(t); }
+          keywords = keywords.slice(0, 3);
+          const replaceMap = CAT_KW_REPLACE[name] || {};
+          keywords = keywords.map(kw => replaceMap[kw] || kw);
+          const color = CAT_COLORS[name] || 'rgba(255,255,255,0.3)';
+          const negPct = info.negative_pct || 0;
+          return `
+          <tr>
+            <td>
+              <div class="cat-name-cell">
+                <span class="cat-dot" style="background:${color}"></span>${name}
+              </div>
+            </td>
+            <td><div style="display:flex;flex-wrap:wrap;gap:4px">${keywords.map(kw => `<span class="cat-kw">${kw}</span>`).join('')}</div></td>
+            <td style="text-align:right;font-weight:700;font-size:15px;color:rgba(255,255,255,0.5)">${info.count}</td>
+            <td style="text-align:right;font-weight:700;font-size:15px;color:${negPctColor(negPct)}">${negPct}%</td>
+            <td style="text-align:right">${priorityTag(negPct)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
 }
 
 // ── REVIEWS ──
-const SRC_LABELS = { google_play:'Play', app_store:'AppStore', naver_blog:'Naver', web_snippet:'Web' };
-const SRC_NAMES  = { google_play:'Google Play', app_store:'App Store', naver_blog:'네이버 블로그', web_snippet:'웹 검색' };
+const SRC_LABELS = { google_play:'PlayStore', app_store:'AppStore', naver_blog:'Blog', naver_cafe:'Cafe', web_snippet:'Web' };
+const SRC_NAMES  = { google_play:'Google Play', app_store:'App Store', naver_blog:'네이버 블로그', naver_cafe:'네이버 카페', web_snippet:'웹 검색' };
 
-function filterAndSort(reviews, { source, category, sentiment, rating, sort, q }) {
+function filterAndSort(reviews, { source, category, sentiment, rating, sort, q, period }) {
   let r = [...reviews];
   if (source)   r = r.filter(x => x.source === source);
   if (category) r = r.filter(x => x.category === category);
@@ -873,6 +977,11 @@ function filterAndSort(reviews, { source, category, sentiment, rating, sort, q }
   if (q) {
     const lq = q.toLowerCase();
     r = r.filter(x => ((x.body||'') + ' ' + (x.title||'')).toLowerCase().includes(lq));
+  }
+  if (period) {
+    const days = parseInt(period);
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    r = r.filter(x => !x.date || new Date(x.date) >= cutoff);
   }
   if (sort === 'date')   r.sort((a,b) => (b.date||'') > (a.date||'') ? 1 : -1);
   else if (sort === 'rating') r.sort((a,b) => (b.rating||0) - (a.rating||0));
@@ -891,8 +1000,9 @@ function renderStoreReviews() {
     category:  document.getElementById('store-filter-category')?.value || '',
     sentiment: document.getElementById('store-filter-sentiment')?.value || '',
     rating:    document.getElementById('store-filter-rating')?.value || '',
-    sort:      document.getElementById('store-filter-sort')?.value || 'priority',
+    sort:      document.getElementById('store-filter-sort')?.value || 'date',
     q:         document.getElementById('store-filter-search')?.value || '',
+    period:    document.getElementById('store-filter-period')?.value || '',
   };
   const filtered = filterAndSort(base, filters);
   const total = filtered.length;
@@ -906,20 +1016,21 @@ function renderStoreReviews() {
 
 function renderWebReviews() {
   if (!allData) return;
-  const base = allData.reviews.filter(r => ['naver_blog','web_snippet'].includes(r.source));
+  const base = allData.reviews.filter(r => ['naver_blog','naver_cafe','web_snippet'].includes(r.source));
   const filters = {
     source:    document.getElementById('web-filter-source')?.value || '',
     category:  document.getElementById('web-filter-category')?.value || '',
     sentiment: document.getElementById('web-filter-sentiment')?.value || '',
     rating:    '',
-    sort:      document.getElementById('web-filter-sort')?.value || 'priority',
+    sort:      document.getElementById('web-filter-sort')?.value || 'date',
     q:         document.getElementById('web-filter-search')?.value || '',
+    period:    document.getElementById('web-filter-period')?.value || '',
   };
   const filtered = filterAndSort(base, filters);
   const total = filtered.length;
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(total / WEB_PAGE_SIZE));
   if (webPage > pages) webPage = pages;
-  _webPagedReviews = filtered.slice((webPage-1)*PAGE_SIZE, webPage*PAGE_SIZE);
+  _webPagedReviews = filtered.slice((webPage-1)*WEB_PAGE_SIZE, webPage*WEB_PAGE_SIZE);
   document.getElementById('web-count-badge').textContent = `${total.toLocaleString()}건`;
   renderReviewRows('web-reviews-tbody', _webPagedReviews, 'openWebModal', false);
   renderPaginationFor('web-pagination', webPage, pages, 'web');
@@ -928,34 +1039,35 @@ function renderWebReviews() {
 function openStoreModal(idx) { openModal(_storePagedReviews[idx]); }
 function openWebModal(idx)   { openModal(_webPagedReviews[idx]);   }
 
-function renderReviewRows(tbodyId, reviews, openFn, showRating) {
+
+function renderReviewRows(tbodyId, reviews, openFn, showRating, clampLines) {
   const tbody = document.getElementById(tbodyId);
-  const cols = showRating ? 8 : 7;
+  const isWeb = !showRating;
+  const cols = isWeb ? 7 : 7;
   if (!reviews || reviews.length === 0) {
     tbody.innerHTML = `<tr><td colspan="${cols}"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
     return;
   }
   const sentMap = { positive:'긍정', neutral:'중립', negative:'부정' };
+  const clampStyle = clampLines ? `style="display:-webkit-box;-webkit-line-clamp:${clampLines};-webkit-box-orient:vertical;overflow:hidden;"` : '';
   tbody.innerHTML = reviews.map((r, i) => {
-    const stars    = r.rating ? '★'.repeat(r.rating)+'☆'.repeat(5-r.rating) : '–';
-    const dateStr  = r.date ? r.date.substring(0,10) : '–';
-    const body     = (r.body || r.title || '').trim();
-    const preview  = body.length > 80 ? body.substring(0,80)+'…' : body;
-    const srcKey   = r.source || 'web_snippet';
-    const pct      = r.priority_score || 0;
-    const barColor = pct >= 75 ? '#FF5B5B' : pct >= 50 ? '#FFB347' : pct >= 25 ? '#7B5CFF' : '#00D4AA';
+    const stars      = r.rating ? '★'.repeat(r.rating)+'☆'.repeat(5-r.rating) : '–';
+    const dateStr    = r.date ? r.date.substring(0,10) : '–';
+    const body       = isWeb ? (r.title || r.body || '').trim() : (r.body || r.title || '').trim();
+    const srcKey     = r.source || 'web_snippet';
+    const level      = r.priority_level || '낮음';
     const ratingCell = showRating ? `<td><span class="stars">${stars}</span></td>` : '';
+    const linkCell   = isWeb && r.link
+      ? `<td onclick="event.stopPropagation()"><a href="${r.link}" target="_blank" rel="noopener" style="font-size:11px;padding:4px 8px;border-radius:6px;background:rgba(123,92,255,0.15);border:1px solid rgba(123,92,255,0.3);color:rgba(255,255,255,0.7);text-decoration:none;white-space:nowrap;display:inline-block;">원문보기 →</a></td>`
+      : isWeb ? `<td></td>` : '';
     return `<tr onclick="${openFn}(${i})">
       <td><span class="source-badge source-${srcKey}">${SRC_LABELS[srcKey]||srcKey}</span></td>
       ${ratingCell}
       <td><span class="sentiment-chip sentiment-${r.sentiment||'neutral'}">${sentMap[r.sentiment||'neutral']||'중립'}</span></td>
       <td><span class="cat-badge">${r.category||'기타'}</span></td>
-      <td><div class="priority-bar">
-        <div class="priority-fill" style="width:${Math.max(pct,3)}px;max-width:60px;background:${barColor};"></div>
-        <span class="priority-num" style="color:${barColor}">${pct}</span>
-      </div></td>
-      <td><span class="priority-level-${r.priority_level||'낮음'}">${r.priority_level||'낮음'}</span></td>
-      <td><div class="text-preview">${escapeHtml(preview)}</div></td>
+      <td><span class="priority-level-${level}">${level}</span></td>
+      <td><div class="text-preview" ${clampStyle}>${escapeHtml(body)}</div></td>
+      ${linkCell}
       <td style="opacity:0.45;font-size:11px;white-space:nowrap;">${dateStr}</td>
     </tr>`;
   }).join('');
@@ -966,12 +1078,14 @@ function renderPaginationFor(containerId, page, pages, section) {
   if (!container) return;
   if (pages <= 1) { container.innerHTML = ''; return; }
   const fn = section === 'store' ? 'goStorePage' : 'goWebPage';
-  let html = `<button class="page-btn" onclick="${fn}(${page-1})" ${page<=1?'disabled':''}>‹ 이전</button>`;
-  const range = 2;
-  for (let i = Math.max(1,page-range); i <= Math.min(pages,page+range); i++) {
+  const blockSize = 5;
+  const blockStart = Math.floor((page - 1) / blockSize) * blockSize + 1;
+  const blockEnd = Math.min(blockStart + blockSize - 1, pages);
+  let html = `<button class="page-btn" onclick="${fn}(${blockStart-1})" ${blockStart<=1?'disabled':''}>‹ 이전</button>`;
+  for (let i = blockStart; i <= blockEnd; i++) {
     html += `<button class="page-btn ${i===page?'active':''}" onclick="${fn}(${i})">${i}</button>`;
   }
-  html += `<button class="page-btn" onclick="${fn}(${page+1})" ${page>=pages?'disabled':''}>다음 ›</button>`;
+  html += `<button class="page-btn" onclick="${fn}(${blockEnd+1})" ${blockEnd>=pages?'disabled':''}>다음 ›</button>`;
   html += `<span class="page-info">${page} / ${pages} 페이지</span>`;
   container.innerHTML = html;
 }
@@ -1004,7 +1118,8 @@ function openModal(review) {
   document.getElementById('modal-body-text').textContent = (review.body || review.title || '').trim();
 
   const linkEl = document.getElementById('modal-link');
-  if (review.link) {
+  const isStore = ['google_play', 'app_store'].includes(review.source);
+  if (review.link && !isStore) {
     linkEl.href = review.link;
     linkEl.style.display = 'inline-flex';
   } else {

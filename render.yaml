@@ -15,4 +15,6 @@ services:
         sync: false
       - key: GOOGLE_CSE_CX
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
     autoDeploy: true
