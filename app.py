@@ -84,6 +84,7 @@ def _run_full_scrape():
         from scrapers.play_store import scrape_play_store
         from scrapers.app_store import scrape_app_store
         from scrapers.naver import scrape_naver_blogs
+        from scrapers.naver_cafe import scrape_naver_cafe
         from scrapers.google_search import scrape_web_snippets
         from processors.aggregator import build_full_dataset
     except Exception as e:
@@ -107,6 +108,7 @@ def _run_full_scrape():
         ("Google Play Store", scrape_play_store, "google_play"),
         ("App Store", scrape_app_store, "app_store"),
         ("네이버 블로그", scrape_naver_blogs, "naver_blog"),
+        ("네이버 카페", scrape_naver_cafe, "naver_cafe"),
         ("웹 검색", scrape_web_snippets, "web_snippet"),
     ]
 
