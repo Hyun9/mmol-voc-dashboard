@@ -4,6 +4,8 @@ import time
 import hashlib
 import logging
 import requests
+from datetime import datetime, timezone, timedelta
+from email.utils import parsedate_to_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +17,11 @@ QUERIES = [
     "현대카드 M몰 불편",
     "현대카드 M몰 오류",
     "현대카드 엠몰 사용후기",
+    "M몰 구매 후기",
+    "엠몰 상품 추천",
+    "M포인트몰 후기",
+    "엠포인트몰 쇼핑",
+    "현대카드 M몰 구매 상품",
 ]
 
 
@@ -24,6 +31,17 @@ def _strip_html(text: str) -> str:
 
 def _make_id(text: str) -> str:
     return hashlib.md5(text.encode()).hexdigest()[:16]
+
+
+def _parse_pub_date(date_str: str) -> str:
+    """네이버 웹문서 API pubDate (RFC 2822) → ISO 8601"""
+    try:
+        dt = parsedate_to_datetime(date_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat()
+    except Exception:
+        return None
 
 
 def scrape_web_snippets(queries: list = None, display: int = 20) -> list:
@@ -66,7 +84,7 @@ def scrape_web_snippets(queries: list = None, display: int = 20) -> list:
                         "rating": None,
                         "title": title,
                         "body": body,
-                        "date": None,
+                        "date": _parse_pub_date(item.get("pubDate", "")),
                         "thumbs_up": 0,
                         "reply": None,
                         "link": link,
@@ -76,4 +94,8 @@ def scrape_web_snippets(queries: list = None, display: int = 20) -> list:
             logger.warning(f"Naver 웹문서 API error for '{query}': {e}")
 
     logger.info(f"Web snippets (Naver 웹문서): {len(results)} collected")
+    cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+    before = len(results)
+    results = [r for r in results if not r.get("date") or r["date"] >= cutoff.isoformat()]
+    logger.info(f"Web snippets (12mo filter): {len(results)}/{before} kept")
     return results

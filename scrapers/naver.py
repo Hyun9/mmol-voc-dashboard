@@ -6,13 +6,41 @@ import hashlib
 import logging
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
 NAVER_API_URL = "https://openapi.naver.com/v1/search/blog.json"
-QUERIES = ["현대카드 M몰", "현대카드 엠몰", "현대카드M몰 후기", "현대카드엠몰 앱"]
+QUERIES = [
+    "M포인트몰 구매 후기",
+    "엠포인트몰 내돈내산",
+    "엠포인트몰 후기",
+    "현대카드 M몰 후기",
+    "현대카드 M포인트 구매 후기",
+    "M포인트 사용 후기",
+    "M몰 내돈내산",
+    "현대카드포인트 쇼핑 후기",
+    "M포인트몰 솔직후기",
+    "현대카드몰 구매후기",
+]
+
+# 실제 M몰 구매 확인을 위한 컨텍스트 패턴
+M_MALL_SIGNALS = [
+    "M포인트몰", "엠포인트몰", "M포인트 몰",
+    "M몰", "엠몰", "현대카드 M몰", "현대카드몰",
+    "M포인트로", "엠포인트로", "현대카드 포인트로",
+    "M포인트 사용", "엠포인트 사용",
+]
+PURCHASE_VERBS = ["구매", "샀", "결제", "주문", "사용했", "사용해서", "써서", "썼"]
+
+
+def _is_mmall_purchase(text: str) -> bool:
+    """M몰에서 실제 구매한 내용인지 확인"""
+    has_signal = any(s in text for s in M_MALL_SIGNALS)
+    has_verb   = any(v in text for v in PURCHASE_VERBS)
+    return has_signal and has_verb
 
 USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
@@ -23,6 +51,64 @@ USER_AGENTS = [
 
 def _strip_html(text: str) -> str:
     return re.sub(r"<[^>]+>", "", text or "").strip()
+
+
+def _to_postview_url(url: str) -> str:
+    """blog.naver.com/user/postid → PostView URL로 변환"""
+    m = re.search(r"blog\.naver\.com/([^/?#]+)/(\d+)", url)
+    if m:
+        return (f"https://blog.naver.com/PostView.naver"
+                f"?blogId={m.group(1)}&logNo={m.group(2)}"
+                f"&redirect=Dlog&widgetTypeCall=true")
+    return url
+
+
+def _fetch_full_body(url: str) -> str:
+    """네이버 블로그 포스트 전체 본문 크롤링 (최대 800자)"""
+    try:
+        fetch_url = _to_postview_url(url)
+        headers = {
+            "User-Agent": random.choice(USER_AGENTS),
+            "Accept-Language": "ko-KR,ko;q=0.9",
+            "Referer": "https://blog.naver.com/",
+        }
+        resp = requests.get(fetch_url, headers=headers, timeout=8)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "lxml")
+        for selector in [".se-main-container", "#postViewArea",
+                         ".post-content", ".se_doc_viewer", "#post-view"]:
+            el = soup.select_one(selector)
+            if el:
+                text = re.sub(r"\s+", " ", el.get_text(separator=" ", strip=True)).strip()
+                if len(text) > 50:
+                    return text[:800]
+    except Exception as e:
+        logger.debug(f"fetch_full_body failed for {url}: {e}")
+    return ""
+
+
+def _enrich_with_full_body(results: list, max_workers: int = 8) -> list:
+    """ThreadPoolExecutor로 전체 본문 병렬 크롤링"""
+    logger.info(f"Crawling full body for {len(results)} naver blog posts...")
+
+    def worker(r: dict) -> dict:
+        body = _fetch_full_body(r.get("link", ""))
+        if body:
+            r["body"] = body
+        return r
+
+    enriched = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(worker, r): r for r in results}
+        for future in as_completed(futures):
+            try:
+                enriched.append(future.result())
+            except Exception:
+                enriched.append(futures[future])
+
+    ok = sum(1 for r in enriched if len(r.get("body", "")) > 100)
+    logger.info(f"Body enrichment complete: {ok}/{len(enriched)} posts enriched")
+    return enriched
 
 
 def _parse_naver_date(date_str: str) -> str:
@@ -56,7 +142,7 @@ def _normalize_api(item: dict) -> dict:
 
 
 def _scrape_via_api(client_id: str, client_secret: str,
-                    queries: list = None, display: int = 20) -> list:
+                    queries: list = None, display: int = 100) -> list:
     if queries is None:
         queries = QUERIES
     results = []
@@ -138,6 +224,16 @@ def scrape_naver_blogs(client_id: str = None, client_secret: str = None,
         logger.info("Scraping Naver blogs via Official API...")
         results = _scrape_via_api(cid, csecret, queries)
         logger.info(f"Naver Blog (API): {len(results)} posts collected")
+        cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+        before = len(results)
+        results = [r for r in results if r.get("date") and r["date"] >= cutoff.isoformat()]
+        logger.info(f"Naver Blog (12mo filter): {len(results)}/{before} kept")
+        results = _enrich_with_full_body(results)
+        # M몰 실제 구매 확인 필터 (본문 크롤링 후 적용)
+        before = len(results)
+        results = [r for r in results
+                   if _is_mmall_purchase((r.get("title","") + " " + r.get("body","")))]
+        logger.info(f"Naver Blog (purchase filter): {len(results)}/{before} kept")
         return results
     else:
         logger.info("Naver API key not set — using fallback scraper...")

@@ -139,7 +139,7 @@ def build_full_dataset(raw_reviews: list) -> dict:
     avg_rating = round(sum(r["rating"] for r in rated) / len(rated), 2) if rated else 0.0
 
     by_source: dict = {}
-    for src in ["google_play", "app_store", "naver_blog", "web_snippet"]:
+    for src in ["google_play", "app_store", "naver_blog", "naver_cafe", "web_snippet"]:
         src_reviews = [r for r in reviews if r.get("source") == src]
         src_rated = [r for r in src_reviews if r.get("rating") is not None]
         by_source[src] = {

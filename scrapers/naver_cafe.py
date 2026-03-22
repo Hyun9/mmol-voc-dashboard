@@ -4,12 +4,37 @@ import time
 import hashlib
 import logging
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 logger = logging.getLogger(__name__)
 
 NAVER_API_URL = "https://openapi.naver.com/v1/search/cafearticle.json"
-QUERIES = ["현대카드 M몰", "현대카드 엠몰", "현대카드M몰 후기", "현대카드엠몰 앱"]
+QUERIES = [
+    "M포인트몰 구매 후기",
+    "엠포인트몰 내돈내산",
+    "엠포인트몰 후기",
+    "현대카드 M몰 후기",
+    "현대카드 M포인트 구매 후기",
+    "M포인트 사용 후기",
+    "M몰 내돈내산",
+    "현대카드포인트 쇼핑 후기",
+    "M포인트몰 솔직후기",
+    "현대카드몰 구매후기",
+]
+
+M_MALL_SIGNALS = [
+    "M포인트몰", "엠포인트몰", "M포인트 몰",
+    "M몰", "엠몰", "현대카드 M몰", "현대카드몰",
+    "M포인트로", "엠포인트로", "현대카드 포인트로",
+    "M포인트 사용", "엠포인트 사용",
+]
+PURCHASE_VERBS = ["구매", "샀", "결제", "주문", "사용했", "사용해서", "써서", "썼"]
+
+
+def _is_mmall_purchase(text: str) -> bool:
+    has_signal = any(s in text for s in M_MALL_SIGNALS)
+    has_verb   = any(v in text for v in PURCHASE_VERBS)
+    return has_signal and has_verb
 
 
 def _strip_html(text: str) -> str:
@@ -47,7 +72,7 @@ def _normalize_api(item: dict) -> dict:
 
 
 def _scrape_via_api(client_id: str, client_secret: str,
-                    queries: list = None, display: int = 20) -> list:
+                    queries: list = None, display: int = 100) -> list:
     if queries is None:
         queries = QUERIES
     results = []
@@ -83,6 +108,15 @@ def scrape_naver_cafe(client_id: str = None, client_secret: str = None,
         logger.info("Scraping Naver Cafe via Official API...")
         results = _scrape_via_api(cid, csecret, queries)
         logger.info(f"Naver Cafe (API): {len(results)} posts collected")
+        cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+        before = len(results)
+        results = [r for r in results if not r.get("date") or r["date"] >= cutoff.isoformat()]
+        logger.info(f"Naver Cafe (12mo filter): {len(results)}/{before} kept")
+        # M몰 실제 구매 확인 필터
+        before = len(results)
+        results = [r for r in results
+                   if _is_mmall_purchase((r.get("title","") + " " + r.get("body","")))]
+        logger.info(f"Naver Cafe (purchase filter): {len(results)}/{before} kept")
         return results
     else:
         logger.warning("Naver API key not set — skipping Naver Cafe scraping.")
