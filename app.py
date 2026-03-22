@@ -51,7 +51,9 @@ def _init_kiwi():
     except Exception as e:
         logger.warning(f"Kiwi 초기화 실패: {e}")
 
-threading.Thread(target=_init_kiwi, daemon=True).start()
+# ENABLE_KIWI=true 일 때만 로드 (Render 무료 플랜 512MB OOM 방지)
+if os.environ.get("ENABLE_KIWI", "false").lower() == "true":
+    threading.Thread(target=_init_kiwi, daemon=True).start()
 
 
 # --- Cache helpers ---

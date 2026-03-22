@@ -90,7 +90,7 @@ async def _fetch_full_body_async(session: aiohttp.ClientSession, url: str) -> st
     return ""
 
 
-async def _enrich_async(results: list, concurrency: int = 50) -> list:
+async def _enrich_async(results: list, concurrency: int = 15) -> list:
     """aiohttp로 전체 본문 비동기 병렬 크롤링 (최대 동시 50개)"""
     sem = asyncio.Semaphore(concurrency)
 
