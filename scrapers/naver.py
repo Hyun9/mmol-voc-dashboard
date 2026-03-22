@@ -228,10 +228,16 @@ def scrape_naver_blogs(client_id: str = None, client_secret: str = None,
         before = len(results)
         results = [r for r in results if r.get("date") and r["date"] >= cutoff.isoformat()]
         logger.info(f"Naver Blog (12mo filter): {len(results)}/{before} kept")
-        results = _enrich_with_full_body(results)
-        # M몰 실제 구매 확인 필터 (본문 크롤링 후 적용)
+        # 제목으로 M몰 신호 사전 필터 (크롤링 전)
         before = len(results)
-        results = [r for r in results
+        title_filtered = [r for r in results if any(s in r.get("title","") for s in M_MALL_SIGNALS)]
+        # 제목 필터 후 남은 게 너무 적으면 전체에서 최대 200개만 크롤링
+        crawl_targets = title_filtered if len(title_filtered) >= 20 else results[:200]
+        logger.info(f"Naver Blog (pre-filter): {len(crawl_targets)} posts to crawl (from {before})")
+        crawl_targets = _enrich_with_full_body(crawl_targets)
+        # M몰 실제 구매 확인 필터 (본문 크롤링 후 적용)
+        before = len(crawl_targets)
+        results = [r for r in crawl_targets
                    if _is_mmall_purchase((r.get("title","") + " " + r.get("body","")))]
         logger.info(f"Naver Blog (purchase filter): {len(results)}/{before} kept")
         return results
