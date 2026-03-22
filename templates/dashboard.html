@@ -853,6 +853,7 @@ html.dark #sidebar { background-color: #030712; }
 // ── STATE ──
 let allData = null;
 let pollingInterval = null;
+let _loadingData = false;
 let storePage = 1, webPage = 1;
 const PAGE_SIZE = 10, WEB_PAGE_SIZE = 10;
 let _storePagedReviews = [], _webPagedReviews = [];
@@ -1089,6 +1090,8 @@ async function pollStatus() {
 }
 function stopPolling() { if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; } }
 async function loadData() {
+  if (_loadingData) return;
+  _loadingData = true;
   try {
     const res = await fetch('/api/data');
     const data = await res.json();
@@ -1096,6 +1099,7 @@ async function loadData() {
     allData = data; showLoading(false); renderDashboard(data); showToast('✓ 데이터 로드 완료','success');
     if (!_kwLoaded) loadPopularKeywords();
   } catch(e) { showLoading(false); showToast('데이터 로드 실패','error'); }
+  finally { _loadingData = false; }
 }
 async function triggerRefresh() {
   const btn = document.getElementById('btn-refresh');
