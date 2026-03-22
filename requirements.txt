@@ -6,3 +6,4 @@ lxml>=5.0.0
 python-dotenv>=1.0.0
 gunicorn>=21.0.0
 kiwipiepy>=0.17.0
+aiohttp>=3.9.0

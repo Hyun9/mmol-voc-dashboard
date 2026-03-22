@@ -4,9 +4,10 @@ import time
 import random
 import hashlib
 import logging
+import asyncio
 import requests
+import aiohttp
 from bs4 import BeautifulSoup
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 
@@ -63,8 +64,8 @@ def _to_postview_url(url: str) -> str:
     return url
 
 
-def _fetch_full_body(url: str) -> str:
-    """네이버 블로그 포스트 전체 본문 크롤링 (최대 800자)"""
+async def _fetch_full_body_async(session: aiohttp.ClientSession, url: str) -> str:
+    """네이버 블로그 포스트 전체 본문 비동기 크롤링 (최대 800자)"""
     try:
         fetch_url = _to_postview_url(url)
         headers = {
@@ -72,9 +73,11 @@ def _fetch_full_body(url: str) -> str:
             "Accept-Language": "ko-KR,ko;q=0.9",
             "Referer": "https://blog.naver.com/",
         }
-        resp = requests.get(fetch_url, headers=headers, timeout=8)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.text, "lxml")
+        async with session.get(fetch_url, headers=headers, timeout=aiohttp.ClientTimeout(total=8)) as resp:
+            if resp.status != 200:
+                return ""
+            html = await resp.text(encoding="utf-8", errors="ignore")
+        soup = BeautifulSoup(html, "lxml")
         for selector in [".se-main-container", "#postViewArea",
                          ".post-content", ".se_doc_viewer", "#post-view"]:
             el = soup.select_one(selector)
@@ -83,32 +86,46 @@ def _fetch_full_body(url: str) -> str:
                 if len(text) > 50:
                     return text[:800]
     except Exception as e:
-        logger.debug(f"fetch_full_body failed for {url}: {e}")
+        logger.debug(f"fetch_full_body_async failed for {url}: {e}")
     return ""
 
 
-def _enrich_with_full_body(results: list, max_workers: int = 8) -> list:
-    """ThreadPoolExecutor로 전체 본문 병렬 크롤링"""
-    logger.info(f"Crawling full body for {len(results)} naver blog posts...")
+async def _enrich_async(results: list, concurrency: int = 50) -> list:
+    """aiohttp로 전체 본문 비동기 병렬 크롤링 (최대 동시 50개)"""
+    sem = asyncio.Semaphore(concurrency)
 
-    def worker(r: dict) -> dict:
-        body = _fetch_full_body(r.get("link", ""))
-        if body:
-            r["body"] = body
-        return r
+    async def worker(r: dict) -> dict:
+        async with sem:
+            body = await _fetch_full_body_async(session, r.get("link", ""))
+            if body:
+                r = dict(r)
+                r["body"] = body
+            return r
 
-    enriched = []
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(worker, r): r for r in results}
-        for future in as_completed(futures):
-            try:
-                enriched.append(future.result())
-            except Exception:
-                enriched.append(futures[future])
+    connector = aiohttp.TCPConnector(limit=concurrency, ssl=False)
+    async with aiohttp.ClientSession(connector=connector) as session:
+        tasks = [worker(r) for r in results]
+        enriched = await asyncio.gather(*tasks, return_exceptions=False)
 
     ok = sum(1 for r in enriched if len(r.get("body", "")) > 100)
     logger.info(f"Body enrichment complete: {ok}/{len(enriched)} posts enriched")
-    return enriched
+    return list(enriched)
+
+
+def _enrich_with_full_body(results: list) -> list:
+    """비동기 크롤링 진입점 (동기 컨텍스트에서 호출)"""
+    logger.info(f"Crawling full body for {len(results)} naver blog posts (aiohttp async)...")
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(asyncio.run, _enrich_async(results))
+                return future.result()
+        else:
+            return loop.run_until_complete(_enrich_async(results))
+    except Exception:
+        return asyncio.run(_enrich_async(results))
 
 
 def _parse_naver_date(date_str: str) -> str:
@@ -228,16 +245,10 @@ def scrape_naver_blogs(client_id: str = None, client_secret: str = None,
         before = len(results)
         results = [r for r in results if r.get("date") and r["date"] >= cutoff.isoformat()]
         logger.info(f"Naver Blog (12mo filter): {len(results)}/{before} kept")
-        # 제목으로 M몰 신호 사전 필터 (크롤링 전)
-        before = len(results)
-        title_filtered = [r for r in results if any(s in r.get("title","") for s in M_MALL_SIGNALS)]
-        # 제목 필터 후 남은 게 너무 적으면 전체에서 최대 200개만 크롤링
-        crawl_targets = title_filtered if len(title_filtered) >= 20 else results[:200]
-        logger.info(f"Naver Blog (pre-filter): {len(crawl_targets)} posts to crawl (from {before})")
-        crawl_targets = _enrich_with_full_body(crawl_targets)
+        results = _enrich_with_full_body(results)
         # M몰 실제 구매 확인 필터 (본문 크롤링 후 적용)
-        before = len(crawl_targets)
-        results = [r for r in crawl_targets
+        before = len(results)
+        results = [r for r in results
                    if _is_mmall_purchase((r.get("title","") + " " + r.get("body","")))]
         logger.info(f"Naver Blog (purchase filter): {len(results)}/{before} kept")
         return results

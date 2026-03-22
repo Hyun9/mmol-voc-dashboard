@@ -96,23 +96,58 @@ def build_trend_data(reviews: list, days: int = 90) -> dict:
     return {"labels": labels, "series": series}
 
 
+# app.py의 _init_kiwi()에서 초기화 완료 후 주입됨
+_kiwi = None
+
+_NOUN_STOPWORDS = {
+    # 대명사/부사
+    "이거", "그게", "그냥", "진짜", "너무", "정말", "아직", "계속", "매번",
+    "항상", "자꾸", "빨리", "바로", "다시", "그리고", "하지만", "근데", "왜냐",
+    # 조사/어미 형태 & 형용사
+    "하고", "어서", "에서", "으로", "하는", "이런", "그런", "있는", "없는",
+    "해서", "해도", "이게", "저도", "이건", "뭔가", "때문", "인데", "같은",
+    "같아", "같이", "것같", "느낌", "생각", "경우", "부분", "내용",
+    # 앱/서비스 공통
+    "현대카드", "현대", "카드", "앱", "어플", "이용", "사용", "서비스",
+    "회사", "제품", "고객", "문제", "기능", "화면", "앱스", "업데이트",
+    "이용자", "사용자", "고객님", "방문", "후기", "리뷰",
+    # 범용 명사 (의미 없음)
+    "정도", "방법", "동안", "일주일", "이후", "현재", "기준", "버전",
+    "이전", "관련", "추가", "개선", "수정", "삭제", "처리", "확인",
+}
+
 def _top_keywords(reviews: list, n: int = 3, allowed_keywords: list = None) -> list:
+    import re
     counter: Counter = Counter()
-    for r in reviews:
-        text = (r.get("body") or "") + " " + (r.get("title") or "")
-        text_lower = text.lower()
-        if allowed_keywords:
-            for kw in allowed_keywords:
-                if kw in text_lower:
-                    counter[kw] += 1
-        else:
-            words = text.split()
+
+    if _kiwi is not None:
+        # kiwipiepy NNG(일반명사) + NNP(고유명사) 추출
+        for r in reviews:
+            text = (r.get("title") or "") + " " + (r.get("body") or "")
+            try:
+                tokens = _kiwi.tokenize(text)
+            except Exception:
+                continue
+            seen = set()
+            for t in tokens:
+                w = t.form.strip()
+                if t.tag not in ("NNG", "NNP"):
+                    continue
+                if len(w) < 2 or w in _NOUN_STOPWORDS or w in seen:
+                    continue
+                counter[w] += 1
+                seen.add(w)
+    else:
+        # fallback: 한글 2자 이상 공백 분리 단어
+        for r in reviews:
+            text = (r.get("title") or "") + " " + (r.get("body") or "")
+            words = re.findall(r'[가-힣]{2,6}', text)
+            seen = set()
             for w in words:
-                w = w.strip(".,!?\"'()[]")
-                if len(w) >= 2 and w not in {"이거", "그게", "그냥", "진짜", "하고",
-                                              "어서", "에서", "으로", "하는", "이런",
-                                              "그런", "있는", "없는", "해서", "해도"}:
+                if w not in _NOUN_STOPWORDS and w not in seen:
                     counter[w] += 1
+                    seen.add(w)
+
     return [w for w, _ in counter.most_common(n)]
 
 

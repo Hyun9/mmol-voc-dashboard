@@ -43,8 +43,10 @@ def _init_kiwi():
     global _kiwi, _kiwi_ready
     try:
         from kiwipiepy import Kiwi
+        import processors.aggregator as _agg
         _kiwi = Kiwi()
         _kiwi_ready = True
+        _agg._kiwi = _kiwi  # aggregator에 kiwi 인스턴스 공유
         logger.info("Kiwi 형태소 분석기 초기화 완료")
     except Exception as e:
         logger.warning(f"Kiwi 초기화 실패: {e}")
@@ -129,11 +131,18 @@ def _run_full_scrape():
         ("웹 검색", scrape_web_snippets, "web_snippet"),
     ]
 
+    cutoff_1y = (datetime.now(timezone.utc) - timedelta(days=365)).isoformat()
+
     for i, (name, fn, src_key) in enumerate(steps, 1):
         scrape_status["progress"] = f"{name} 수집 중... ({i}/{len(steps)})"
         t0 = time.time()
         try:
             results = fn()
+            # 스토어 리뷰 1년 필터
+            if src_key in ("app_store", "google_play"):
+                before = len(results)
+                results = [r for r in results if r.get("date") and r["date"] >= cutoff_1y]
+                logger.info(f"{name} (1년 필터): {len(results)}/{before} kept")
             elapsed = round(time.time() - t0, 1)
             all_reviews.extend(results)
             source_counts[src_key] = len(results)
@@ -592,6 +601,23 @@ def _compute_keywords_bg():
         _kw_cache["data"] = keywords
         _kw_cache["updated"] = datetime.now(timezone.utc)
         logger.info(f"[bg] 키워드 계산 완료: {len(keywords)}개")
+
+        # VOC 카테고리 top_issues도 kiwi로 재계산 후 캐시 업데이트
+        try:
+            from processors.aggregator import build_full_dataset
+            cached = _read_cache()
+            if cached.get("reviews"):
+                new_dataset = build_full_dataset(cached["reviews"])
+                meta = json.loads(CACHE_META_FILE.read_text(encoding="utf-8")) if CACHE_META_FILE.exists() else {}
+                _write_cache(
+                    new_dataset,
+                    meta.get("source_counts", {}),
+                    meta.get("scrape_durations", {}),
+                    meta.get("errors", []),
+                )
+                logger.info("[bg] VOC 카테고리 top_issues kiwi 재계산 완료")
+        except Exception as e2:
+            logger.warning(f"[bg] VOC 재계산 실패: {e2}")
     except Exception as e:
         logger.warning(f"[bg] 키워드 계산 실패: {e}")
 

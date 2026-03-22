@@ -9,8 +9,8 @@
   (function(){
     const t = localStorage.getItem('voc-theme');
     const html = document.documentElement;
-    if (t === 'light') { html.classList.remove('dark'); }
-    else { html.classList.add('dark'); }
+    if (t === 'dark') { html.classList.add('dark'); }
+    else { html.classList.remove('dark'); }
   })();
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
@@ -620,7 +620,7 @@ html.dark #sidebar { background-color: #030712; }
             <option value="">모든 소스</option><option value="google_play">Google Play</option><option value="app_store">App Store</option>
           </select>
           <select id="store-filter-category" onchange="applyStoreFilters()">
-            <option value="">모든 카테고리</option><option value="앱 성능/속도">앱 성능/속도</option><option value="UI/UX">UI/UX</option><option value="포인트/혜택">포인트/혜택</option><option value="배송/주문">배송/주문</option><option value="고객서비스">고객서비스</option><option value="로그인/인증">로그인/인증</option><option value="기타">기타</option>
+            <option value="">모든 카테고리</option><option value="앱 성능/속도">앱 성능/속도</option><option value="UI/UX">UI/UX</option><option value="포인트/혜택">포인트/혜택</option><option value="배송/주문">배송/주문</option><option value="상품">상품</option><option value="로그인/인증">로그인/인증</option><option value="기타">기타</option>
           </select>
           <select id="store-filter-sentiment" onchange="applyStoreFilters()">
             <option value="">모든 감성</option><option value="negative">부정</option><option value="neutral">중립</option><option value="positive">긍정</option>
@@ -743,13 +743,28 @@ html.dark #sidebar { background-color: #030712; }
       </dl>
     </div>
 
-    <!-- 인기 키워드 TOP 10 -->
-    <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
-      <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">M몰 인기 상품 키워드 TOP 10</h3>
-      <p class="text-xs mb-4" style="color:var(--c-text-3);">네이버 블로그/카페 기준 현대카드 M몰 인기 상품</p>
-      <div class="flex flex-wrap gap-2" id="kw-list">
-        <span class="text-xs" style="color:var(--c-text-3);">불러오는 중...</span>
+    <!-- 네이버 카테고리 분포 + 인기 키워드 TOP 10 (좌우 배치) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- 좌: 네이버 리뷰 카테고리 분포 도넛 -->
+      <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
+        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">리뷰 카테고리 분포</h3>
+        <p class="text-xs mb-0.5" style="color:var(--c-text-3);">주요 상품 카테고리 비율</p>
+        <div class="flex items-center justify-center" style="flex:1;min-height:300px;padding-top:20px;gap:40px;">
+          <div id="chart-naver-donut" style="width:280px;flex-shrink:0;height:300px;min-height:300px;"></div>
+          <div id="naver-donut-legend" class="flex flex-col justify-center" style="min-width:108px;gap:10px;"></div>
+        </div>
       </div>
+
+      <!-- 우: 인기 키워드 TOP 10 -->
+      <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);display:flex;flex-direction:column;">
+        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">M몰 인기 상품 키워드 TOP 10</h3>
+        <p class="text-xs" style="color:var(--c-text-3);margin-bottom:20px;">네이버 블로그/카페 기준 현대카드 M몰 인기 상품</p>
+        <div id="kw-list" style="flex:1;display:flex;align-items:center;">
+          <span class="text-xs" style="color:var(--c-text-3);">불러오는 중...</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- 네이버 리뷰 테이블 -->
@@ -764,10 +779,7 @@ html.dark #sidebar { background-color: #030712; }
             <option value="">모든 소스</option><option value="naver_blog">네이버 블로그</option><option value="naver_cafe">네이버 카페</option><option value="web_snippet">웹 검색</option>
           </select>
           <select id="web-filter-category" onchange="applyWebFilters()">
-            <option value="">모든 카테고리</option><option value="앱 성능/속도">앱 성능/속도</option><option value="UI/UX">UI/UX</option><option value="포인트/혜택">포인트/혜택</option><option value="배송/주문">배송/주문</option><option value="고객서비스">고객서비스</option><option value="로그인/인증">로그인/인증</option><option value="기타">기타</option>
-          </select>
-          <select id="web-filter-sentiment" onchange="applyWebFilters()">
-            <option value="">모든 감성</option><option value="negative">부정</option><option value="neutral">중립</option><option value="positive">긍정</option>
+            <option value="">모든 카테고리</option><option value="전자기기">전자기기</option><option value="생활/가전">생활/가전</option><option value="패션/잡화">패션/잡화</option><option value="포인트 활용">포인트 활용</option><option value="이벤트/딜">이벤트/딜</option><option value="식음료/여행">식음료/여행</option><option value="기타">기타</option>
           </select>
           <select id="web-filter-sort" onchange="applyWebFilters()">
             <option value="date">최신순</option><option value="priority">우선순위순</option>
@@ -784,7 +796,7 @@ html.dark #sidebar { background-color: #030712; }
       <div class="px-5">
         <table class="reviews-table">
           <thead><tr>
-            <th style="width:86px;">소스</th><th style="width:68px;">감성</th><th style="width:108px;">카테고리</th>
+            <th style="width:86px;">소스</th><th style="width:108px;">카테고리</th>
             <th>내용</th><th style="width:90px;">원문</th><th style="width:96px;">날짜</th>
           </tr></thead>
           <tbody id="web-reviews-tbody"></tbody>
@@ -937,7 +949,7 @@ function updateChartsTheme() {
   // 트렌드 차트 gradient 재주입 (relayout으로 SVG 초기화됨)
   requestAnimationFrame(applyTrendGradient);
 
-  // 도넛: 어노테이션 색상 (스토어 리뷰 기준)
+  // 스토어 도넛 어노테이션 색상
   const bc = buildStoreSummary(allData).by_category || {};
   const total = Object.values(bc).reduce((a, v) => a + (v.count || 0), 0);
   const donutEl = document.getElementById('chart-cat-donut');
@@ -947,6 +959,18 @@ function updateChartsTheme() {
       annotations: [
         { text:`<b>${total}</b>`, x:.5, y:.53, showarrow:false, font:{size:24, color:th.annoColor}, xanchor:'center' },
         { text:'VOC',            x:.5, y:.46, showarrow:false, font:{size:11, color:th.annoSub},   xanchor:'center' },
+      ]
+    });
+  }
+  // 네이버 도넛 어노테이션 색상
+  const naverDonutEl = document.getElementById('chart-naver-donut');
+  if (naverDonutEl && naverDonutEl.data && naverDonutEl.data.length) {
+    const naverTotal = Object.values(buildNaverCategorySummary(allData)).reduce((a,v)=>a+v,0);
+    Plotly.relayout('chart-naver-donut', {
+      'font.color': th.fontColor,
+      annotations: [
+        { text:`<b>${naverTotal}</b>`, x:.5, y:.53, showarrow:false, font:{size:24, color:th.annoColor}, xanchor:'center' },
+        { text:'건',                  x:.5, y:.46, showarrow:false, font:{size:11, color:th.annoSub},   xanchor:'center' },
       ]
     });
   }
@@ -965,10 +989,15 @@ function switchTab(tab) {
     store: { title: '스토어 리뷰 분석', sub: 'Google Play · App Store 기준' },
     naver: { title: '네이버 리뷰 분석',   sub: '네이버 블로그 · 카페 기준' }
   };
-  document.getElementById('page-title').textContent    = titles[tab].title;
-  document.getElementById('page-subtitle').textContent = titles[tab].sub;
+  const ptEl = document.getElementById('page-title');
+  const psEl = document.getElementById('page-subtitle');
+  if (ptEl) ptEl.textContent = titles[tab].title;
+  if (psEl) psEl.textContent = titles[tab].sub;
   if (tab === 'naver') {
-    if (allData) renderNaverKPIs(allData);
+    if (allData) {
+      renderNaverKPIs(allData);
+      setTimeout(() => renderNaverDonut(allData), 50);
+    }
     if (!_kwLoaded) loadPopularKeywords();
   }
 }
@@ -993,12 +1022,23 @@ async function loadPopularKeywords() {
       return;
     }
     loadPopularKeywords._retry = 0;
-    list.innerHTML = kws.map(kw => `
-      <div class="kw-item" style="cursor:pointer;" onclick="openKwSourceModal('${escapeHtml(kw.keyword)}')">
-        <span class="kw-rank ${kw.rank <= 3 ? 'kw-rank-top' : ''}">${kw.rank}</span>
-        <span>${escapeHtml(kw.keyword)}</span>
-        ${kw.count ? `<span style="font-size:10px;color:var(--c-text-3);">${kw.count}건</span>` : ''}
-      </div>`).join('');
+    const row = (kw) => `
+      <tr onclick="openKwSourceModal('${escapeHtml(kw.keyword)}')" style="cursor:pointer;" onmouseover="this.style.background='var(--c-tbl-hover)'" onmouseout="this.style.background=''">
+        <td style="padding:11px 6px 11px 6px;font-size:12px;font-weight:700;color:${kw.rank<=3?'#f59e0b':'#6366f1'};width:22px;">${kw.rank}</td>
+        <td style="padding:11px 6px 11px 0;font-size:13px;color:var(--c-text);font-weight:500;">${escapeHtml(kw.keyword)}</td>
+        <td style="padding:11px 6px 11px 0;font-size:11px;color:var(--c-text-3);text-align:right;white-space:nowrap;">${kw.count ? kw.count+'건' : '–'}</td>
+      </tr>`;
+    const thead = `<thead><tr>
+      <th style="text-align:left;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 6px;width:22px;">#</th>
+      <th style="text-align:left;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 0;">키워드</th>
+      <th style="text-align:right;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 0;">언급수</th>
+    </tr></thead>`;
+    const left = kws.slice(0,5); const right = kws.slice(5,10);
+    const mkTable = (items) => `<table style="width:100%;border-collapse:collapse;">${thead}<tbody>${items.map(row).join('')}</tbody></table>`;
+    list.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;">
+      <div style="border-right:1px solid rgba(156,163,175,0.12);padding-right:28px;">${mkTable(left)}</div>
+      <div style="padding-left:28px;">${mkTable(right)}</div>
+    </div>`;
   } catch(e) {
     document.getElementById('kw-list').innerHTML = '<span style="font-size:12px;color:var(--c-text-3);">불러오기 실패</span>';
   }
@@ -1179,7 +1219,7 @@ function renderCharts(data) {
     legend:{font:{size:10},bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.22},
   };
   const AX = {gridcolor:th.gridColor,color:th.fontColor,tickfont:{size:10},zerolinecolor:th.zeroColor};
-  const CFG = {responsive:true,displayModeBar:false};
+  const CFG = {responsive:true,displayModeBar:false,doubleClick:false};
 
   // 1. 평점 분포
   const rd = s.rating_distribution || {};
@@ -1218,8 +1258,14 @@ function renderCharts(data) {
       weekMap[wk].sum += Number(r.rating); weekMap[wk].cnt++;
     }
   }
-  const trendX = weekKeys.map(k => k.substring(5).replace('-','/'));
-  const trendY = weekKeys.map(k => weekMap[k] ? +(weekMap[k].sum/weekMap[k].cnt).toFixed(2) : null);
+  // 데이터 없는 현재 주(trailing null)는 표시 제외
+  const displayKeys = [...weekKeys];
+  while (displayKeys.length > 1 && !weekMap[displayKeys[displayKeys.length - 1]]) {
+    displayKeys.pop();
+  }
+  const trendX = displayKeys.map(k => k.substring(5).replace('-','/'));
+  const trendY = displayKeys.map(k => weekMap[k] ? +(weekMap[k].sum/weekMap[k].cnt).toFixed(2) : null);
+  const trendMax = displayKeys.length - 1;
   Plotly.react('chart-rating-trend', [{
     type:'scatter', mode:'lines+markers', x:trendX, y:trendY, connectgaps:true,
     fill:'tozeroy',
@@ -1229,7 +1275,7 @@ function renderCharts(data) {
     hovertemplate:'%{x} 주<br>평균 평점: %{y}<extra></extra>',
     name:'평균 평점',
   }], {...L, showlegend:false,
-    xaxis:{...AX, tickangle:0, range:[-0.3, 7.3]},
+    xaxis:{...AX, tickangle:0, range:[-0.3, trendMax + 0.3]},
     yaxis:{...AX, range:[1, 5]},
     margin:{t:8,b:36,l:36,r:16}
   }, CFG).then(() => applyTrendGradient());
@@ -1260,12 +1306,76 @@ function renderCharts(data) {
         <span style="font-size:12px;color:var(--c-text);white-space:nowrap;">${n}</span>
       </div>`).join('');
   }
+  // 네이버 탭이 활성화된 경우 도넛도 바로 렌더링
+  if (_activeTab === 'naver') renderNaverDonut(data);
 }
 
-const CAT_COLORS={'앱 성능/속도':'#6366f1','UI/UX':'#8b5cf6','포인트/혜택':'#f87171','배송/주문':'#fbbf24','고객서비스':'#34d399','로그인/인증':'#38bdf8','기타':'#6b7280'};
-const CAT_HIDDEN_TAGS={'포인트/혜택':['포인트','사용'],'기타':['너무','제발','쓰게','너무비싸다']};
-const CAT_EXTRA_TAGS={'기타':['상품','수량']};
-const CAT_KW_REPLACE={'앱 성능/속도':{'느려':'느려요'},'고객서비스':{'개선':'응대'}};
+const CAT_COLORS={'앱 성능/속도':'#6366f1','UI/UX':'#8b5cf6','포인트/혜택':'#f87171','배송/주문':'#34d399','상품':'#fbbf24','로그인/인증':'#38bdf8','기타':'#6b7280'};
+const CAT_FIXED_KWS={
+  '로그인/인증':['인증','로그인','인증번호'],
+  '앱 성능/속도':['느려요','오류','로딩'],
+  '배송/주문':['결제','상품','주문'],
+  'UI/UX':['불편','검색','화면'],
+  '포인트/혜택':['엠포인트','포인트사용','이벤트'],
+  '상품':['다양성 부족','제품 부족','수량 한정'],
+  '기타':['가격','pc버전','기타'],
+};
+
+const NAVER_CAT_COLORS={'전자기기':'#6366f1','생활/가전':'#34d399','패션/잡화':'#f472b6','포인트 활용':'#fbbf24','이벤트/딜':'#f87171','식음료/여행':'#38bdf8','기타':'#6b7280'};
+const NAVER_CAT_KEYWORDS={
+  '전자기기':['애플','삼성','갤럭시','맥북','아이폰','이어폰','애플워치','카메라','오닉스','이북리더기','다이슨','키보드','노트북','에어팟','스마트워치','태블릿'],
+  '생활/가전':['가습기','음식물처리기','침대','청소기','의자','히터','가전','주방','식기','가구','매트리스','시몬스','조명','선풍기'],
+  '패션/잡화':['의류','가방','신발','캐리어','볼캡','패션','세인트제임스','어그','운동화','티셔츠'],
+  '포인트 활용':['포인트 전환','포인트 사용','엠포인트','M포인트','포인트몰','포인트 현금','포인트 효율','적립방법','포인트로'],
+  '이벤트/딜':['특가','할인','공구','애플데이','이벤트 상품','프로모션','기획전','쿠폰'],
+  '식음료/여행':['뷔페','라운지','호텔','레스토랑','공항','여행','오마카세','런치','디너'],
+};
+
+function buildNaverCategorySummary(data) {
+  const NAVER_SOURCES = ['naver_blog','naver_cafe','web_snippet'];
+  const nr = (data.reviews||[]).filter(r => NAVER_SOURCES.includes(r.source));
+  const by_cat = {};
+  for (const r of nr) {
+    const text = ((r.title||'') + ' ' + (r.body||'')).toLowerCase();
+    let matched = '기타'; let maxHits = 0;
+    for (const [cat, kws] of Object.entries(NAVER_CAT_KEYWORDS)) {
+      const hits = kws.filter(kw => text.includes(kw.toLowerCase())).length;
+      if (hits > maxHits) { maxHits = hits; matched = cat; }
+    }
+    by_cat[matched] = (by_cat[matched]||0) + 1;
+  }
+  return by_cat;
+}
+
+function renderNaverDonut(data) {
+  const by_cat = buildNaverCategorySummary(data);
+  const th = getThemeVars();
+  const L = { paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)', font:{color:th.fontColor,family:'Pretendard,-apple-system,sans-serif',size:11} };
+  const CFG = {responsive:true, displayModeBar:false};
+  const names = Object.entries(by_cat).filter(([,v])=>v>0).sort(([,a],[,b])=>b-a).map(([k])=>k);
+  const vals  = names.map(k=>by_cat[k]);
+  if (!names.length) return;
+  const total = vals.reduce((a,b)=>a+b,0);
+  Plotly.react('chart-naver-donut', [{
+    type:'pie', hole:.56, sort:false, direction:'clockwise',
+    labels:names, values:vals, domain:{x:[0,1],y:[0.02,.98]},
+    marker:{colors:names.map(k=>NAVER_CAT_COLORS[k]||'#6b7280'),line:{color:'rgba(0,0,0,.1)',width:2}},
+    textinfo:'percent', textposition:'auto',
+    hovertemplate:'%{label}: %{value}건 (%{percent})<extra></extra>',
+    insidetextfont:{size:12,color:'rgba(255,255,255,.92)'},
+    outsidetextfont:{size:11,color:th.fontColor},
+  }], {...L, margin:{t:16,b:16,l:16,r:4}, showlegend:false,
+    annotations:[
+      {text:`<b>${total}</b>`,x:.5,y:.53,showarrow:false,font:{size:24,color:th.annoColor},xanchor:'center'},
+      {text:'건',x:.5,y:.46,showarrow:false,font:{size:11,color:th.annoSub},xanchor:'center'},
+    ]
+  }, CFG);
+  document.getElementById('naver-donut-legend').innerHTML = names.map(n=>`
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${NAVER_CAT_COLORS[n]||'#6b7280'};flex-shrink:0;display:inline-block;"></span>
+      <span style="font-size:12px;color:var(--c-text);white-space:nowrap;">${n}</span>
+    </div>`).join('');
+}
 
 function negPctClass(p){return p>=70?'neg-pct-urgent':p>=50?'neg-pct-high':p>=25?'neg-pct-mid':'neg-pct-low';}
 function priorityTag(p){
@@ -1282,10 +1392,7 @@ function renderCategoryCards(bc) {
       <colgroup><col style="width:22%"><col><col style="width:8%"><col style="width:12%"><col style="width:16%"></colgroup>
       <thead><tr><th>카테고리</th><th>키워드</th><th style="text-align:right">건수</th><th style="text-align:right">부정 비율</th><th style="text-align:right">우선순위</th></tr></thead>
       <tbody>${cats.map(([name,info])=>{
-        const h=CAT_HIDDEN_TAGS[name]||[];const e=CAT_EXTRA_TAGS[name]||[];
-        let kws=(info.top_issues||[]).filter(k=>!h.includes(k));
-        for(const t of e){if(!kws.includes(t))kws.push(t);}
-        kws=kws.slice(0,3).map(k=>(CAT_KW_REPLACE[name]||{})[k]||k);
+        const kws=CAT_FIXED_KWS[name]||[];
         const c=CAT_COLORS[name]||'#6b7280';const n=info.negative_pct||0;
         return `<tr>
           <td><div class="cat-name-cell"><span class="cat-dot" style="background:${c}"></span>${name}</div></td>
@@ -1353,8 +1460,9 @@ function priClass(l){return l==='긴급'?'priority-urgent':l==='높음'?'priorit
 function renderReviewRows(tbodyId,reviews,openFn,showRating){
   const tbody=document.getElementById(tbodyId);
   const isWeb=!showRating;
+  const colspan = isWeb ? 5 : 7;
   if(!reviews||!reviews.length){
-    tbody.innerHTML=`<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${colspan}"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
     return;
   }
   const sentMap={positive:'긍정',neutral:'중립',negative:'부정'};
@@ -1364,14 +1472,17 @@ function renderReviewRows(tbodyId,reviews,openFn,showRating){
     const body=(isWeb?(r.title||r.body||''):(r.body||r.title||'')).trim();
     const src=r.source||'web_snippet';const lvl=r.priority_level||'낮음';const sent=r.sentiment||'neutral';
     const rCell=showRating?`<td><span class="stars">${stars}</span></td>`:'';
+    const sentCell=!isWeb?`<td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap ${sentClass(sent)}">${sentMap[sent]}</span></td>`:'';
     const lCell=isWeb&&r.link
       ?`<td onclick="event.stopPropagation()"><a href="${r.link}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.2);text-decoration:none;white-space:nowrap;">원문보기 →</a></td>`
       :isWeb?`<td></td>`:'';
+    const naverCat = isWeb ? (buildNaverCategorySummary._catFor?.(r) || r.category||'기타') : (r.category||'기타');
+    const catLabel = isWeb ? naverCat : (r.category||'기타');
     return `<tr onclick="${openFn}(${i})">
       <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${srcClass(src)}">${SRC_LABELS[src]||src}</span></td>
       ${rCell}
-      <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap ${sentClass(sent)}">${sentMap[sent]}</span></td>
-      <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.15);">${r.category||'기타'}</span></td>
+      ${sentCell}
+      <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.15);">${catLabel}</span></td>
       <td><p class="text-clamp" style="color:var(--c-text);font-weight:400;font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;">${escapeHtml(body)}</p></td>
       ${lCell}
       <td class="whitespace-nowrap" style="color:var(--c-text-3);font-size:11px;">${dateStr}</td>
@@ -1421,7 +1532,7 @@ function closeModalOverlay(e){if(e.target===document.getElementById('review-moda
 let kwData = {};
 const CAT_LABELS = {
   '앱_성능_속도':'앱 성능/속도','UI_UX':'UI/UX','포인트_혜택':'포인트/혜택',
-  '배송_주문':'배송/주문','고객서비스':'고객서비스','로그인_인증':'로그인/인증','기타':'기타'
+  '배송_주문':'배송/주문','상품_다양성':'상품','로그인_인증':'로그인/인증','기타':'기타'
 };
 async function openKwModal() {
   const res = await fetch('/api/keywords');
