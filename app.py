@@ -686,15 +686,17 @@ def get_trends():
     return jsonify(trend)
 
 
-if __name__ == "__main__":
-    # Auto-scrape on startup if no cache
+# gunicorn 포함 모든 실행 환경에서 startup 로직 실행
+def _on_startup():
     if not CACHE_FILE.exists():
         logger.info("No cache found — starting initial scrape...")
         _start_scrape_thread()
     else:
         logger.info("Cache found — using existing data. Use /api/refresh to update.")
-        # 기존 캐시 있으면 Kiwi 준비 후 바로 키워드 계산
         threading.Thread(target=_compute_keywords_bg, daemon=True).start()
 
+_on_startup()
+
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port, threaded=True, use_reloader=False)
