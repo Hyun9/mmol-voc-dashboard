@@ -1,0 +1,18 @@
+app = "m-mall-voc-dashboard"
+primary_region = "nrt"
+
+[env]
+  PORT = "8080"
+  CACHE_TTL_SECONDS = "3600"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
