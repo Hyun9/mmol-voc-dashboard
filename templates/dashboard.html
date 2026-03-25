@@ -483,7 +483,7 @@ html.dark #sidebar { background-color: #030712; }
   <div class="px-8 pt-7 pb-4 flex items-start justify-between">
     <div>
       <h1 class="text-xl font-semibold tracking-tight" style="color:var(--c-text);">스토어 리뷰 분석</h1>
-      <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">Google Play · App Store 기준</p>
+      <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">Google Play · App Store · 최근 1년 기준</p>
     </div>
     <div class="flex items-center gap-3 mt-1">
       <div class="flex items-center gap-1.5">
@@ -661,7 +661,7 @@ html.dark #sidebar { background-color: #030712; }
   <div class="px-8 pt-7 pb-4 flex items-start justify-between">
     <div>
       <h1 class="text-xl font-semibold tracking-tight" style="color:var(--c-text);">네이버 리뷰 분석</h1>
-      <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">네이버 블로그 · 카페 기준</p>
+      <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">블로그 · 카페 · 웹문서 · 최근 1년 기준</p>
     </div>
     <div class="flex items-center gap-3 mt-1">
       <div class="flex items-center gap-1.5">
@@ -987,8 +987,8 @@ function switchTab(tab) {
   document.getElementById('tab-btn-naver').classList.toggle('active', tab === 'naver');
   // 상단 타이틀 업데이트
   const titles = {
-    store: { title: '스토어 리뷰 분석', sub: 'Google Play · App Store 기준' },
-    naver: { title: '네이버 리뷰 분석',   sub: '네이버 블로그 · 카페 기준' }
+    store: { title: '스토어 리뷰 분석', sub: 'Google Play · App Store · 최근 1년 기준' },
+    naver: { title: '네이버 리뷰 분석',   sub: '블로그 · 카페 · 웹문서 · 최근 1년 기준' }
   };
   const ptEl = document.getElementById('page-title');
   const psEl = document.getElementById('page-subtitle');
@@ -1335,6 +1335,16 @@ const NAVER_CAT_KEYWORDS={
   '식음료/여행':['뷔페','라운지','호텔','레스토랑','공항','여행','오마카세','런치','디너'],
 };
 
+function getNaverCat(r) {
+  const text = ((r.title||'') + ' ' + (r.body||'')).toLowerCase();
+  let matched = '기타', maxHits = 0;
+  for (const [cat, kws] of Object.entries(NAVER_CAT_KEYWORDS)) {
+    const hits = kws.filter(kw => text.includes(kw.toLowerCase())).length;
+    if (hits > maxHits) { maxHits = hits; matched = cat; }
+  }
+  return matched;
+}
+
 function buildNaverCategorySummary(data) {
   const NAVER_SOURCES = ['naver_blog','naver_cafe','web_snippet'];
   const nr = (data.reviews||[]).filter(r => NAVER_SOURCES.includes(r.source));
@@ -1444,8 +1454,10 @@ function renderStoreReviews(){
 function renderWebReviews(){
   if(!allData)return;
   const base=allData.reviews.filter(r=>['naver_blog','naver_cafe','web_snippet'].includes(r.source));
-  const f={source:document.getElementById('web-filter-source')?.value||'',category:document.getElementById('web-filter-category')?.value||'',sentiment:document.getElementById('web-filter-sentiment')?.value||'',rating:'',sort:document.getElementById('web-filter-sort')?.value||'date',q:document.getElementById('web-filter-search')?.value||'',period:document.getElementById('web-filter-period')?.value||''};
-  const filtered=filterAndSort(base,f);
+  const catFilter=document.getElementById('web-filter-category')?.value||'';
+  const f={source:document.getElementById('web-filter-source')?.value||'',category:'',sentiment:document.getElementById('web-filter-sentiment')?.value||'',rating:'',sort:document.getElementById('web-filter-sort')?.value||'date',q:document.getElementById('web-filter-search')?.value||'',period:document.getElementById('web-filter-period')?.value||''};
+  let filtered=filterAndSort(base,f);
+  if(catFilter) filtered=filtered.filter(r=>getNaverCat(r)===catFilter);
   const total=filtered.length;const pages=Math.max(1,Math.ceil(total/WEB_PAGE_SIZE));
   if(webPage>pages)webPage=pages;
   _webPagedReviews=filtered.slice((webPage-1)*WEB_PAGE_SIZE,webPage*WEB_PAGE_SIZE);
@@ -1480,8 +1492,7 @@ function renderReviewRows(tbodyId,reviews,openFn,showRating){
     const lCell=isWeb&&r.link
       ?`<td onclick="event.stopPropagation()"><a href="${r.link}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.2);text-decoration:none;white-space:nowrap;">원문보기 →</a></td>`
       :isWeb?`<td></td>`:'';
-    const naverCat = isWeb ? (buildNaverCategorySummary._catFor?.(r) || r.category||'기타') : (r.category||'기타');
-    const catLabel = isWeb ? naverCat : (r.category||'기타');
+    const catLabel = isWeb ? getNaverCat(r) : (r.category||'기타');
     return `<tr onclick="${openFn}(${i})">
       <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${srcClass(src)}">${SRC_LABELS[src]||src}</span></td>
       ${rCell}
