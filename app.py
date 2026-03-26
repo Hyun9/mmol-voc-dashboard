@@ -678,6 +678,215 @@ def get_keyword_sources():
         return jsonify({"sources": [], "error": str(e)})
 
 
+_CAT_COLORS = {
+    '앱 성능/속도': '#6366f1', 'UI/UX': '#a78bfa',
+    '포인트/혜택': '#34d399',  '배송/주문': '#38bdf8',
+    '상품':        '#fbbf24',  '로그인/인증': '#f87171',
+    '고객서비스':   '#fb923c',  '기타': '#6b7280',
+}
+
+def _donut_segment_path(cx, cy, r_out, r_in, start_deg, end_deg):
+    import math
+    s = math.radians(start_deg - 90)
+    e = math.radians(end_deg  - 90)
+    large = 1 if (end_deg - start_deg) > 180 else 0
+    cs, ss = math.cos(s), math.sin(s)
+    ce, se = math.cos(e), math.sin(e)
+    return (f"M {cx+r_out*cs:.2f} {cy+r_out*ss:.2f} "
+            f"A {r_out} {r_out} 0 {large} 1 {cx+r_out*ce:.2f} {cy+r_out*se:.2f} "
+            f"L {cx+r_in*ce:.2f} {cy+r_in*se:.2f} "
+            f"A {r_in} {r_in} 0 {large} 0 {cx+r_in*cs:.2f} {cy+r_in*ss:.2f} Z")
+
+
+def _generate_report_summary(total, store_count, avg_rating, pos_pct, neg_pct, cat_list):
+    """Gemini로 리포트용 구조화 요약 생성. API 실패 시 데이터 기반 폴백."""
+    import json as _json, re as _re
+
+    # ── 데이터 기반 폴백 요약 (API 없어도 항상 동작) ─────────────────────────
+    def _fallback():
+        top = cat_list[:3]
+        trend_word = "안정적" if avg_rating >= 4.0 else ("하락세" if avg_rating < 3.5 else "보통 수준")
+        summary = (
+            f"분석 기간 M몰 앱의 평균 평점은 {avg_rating}점으로 {trend_word}이며, "
+            f"전체 {total}건 중 부정 리뷰 비율은 {neg_pct}%입니다."
+        )
+        issues = []
+        for c in top:
+            issues.append(f"{c['name']} 관련 불만 {c['count']}건 (부정 {c['neg_pct']}%)")
+        if not issues:
+            issues = ["수집된 VOC 데이터가 부족합니다."]
+        top_cat = top[0]['name'] if top else "전반적인 기능"
+        recommendation = f"우선순위가 가장 높은 '{top_cat}' 영역의 개선을 먼저 검토하세요."
+        return {"summary": summary, "issues": issues, "recommendation": recommendation}
+
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if not api_key or not total:
+        return _fallback()
+
+    try:
+        top3 = [f"{c['name']}({c['count']}건, 부정 {c['neg_pct']}%)" for c in cat_list[:3]]
+        prompt = (
+            f"현대카드 M몰 앱 VOC 분석 데이터:\n"
+            f"- 분석 리뷰: {total}건 (스토어 {store_count}건)\n"
+            f"- 평균 평점: {avg_rating}점 / 5점\n"
+            f"- 긍정 {pos_pct}% / 부정 {neg_pct}%\n"
+            f"- 우선순위 VOC 카테고리: {', '.join(top3)}\n\n"
+            "위 데이터를 바탕으로 아래 JSON 형식으로만 응답하세요. 코드블록/마크다운 없이 순수 JSON만 출력:\n"
+            '{"summary":"전반적 상황을 담은 한 문장 요약","issues":["주요 이슈1","주요 이슈2","주요 이슈3"],"recommendation":"핵심 개선 방향 한 문장"}'
+        )
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        # gemini-1.5-flash 우선, 실패 시 gemini-2.0-flash 시도
+        for model in ("gemini-1.5-flash", "gemini-2.0-flash"):
+            try:
+                resp = client.models.generate_content(model=model, contents=prompt)
+                text = _re.sub(r"^```(?:json)?\s*|\s*```$", "", resp.text.strip(), flags=_re.MULTILINE)
+                result = _json.loads(text)
+                logger.info(f"Report AI summary OK ({model})")
+                return result
+            except Exception as model_err:
+                logger.warning(f"Report AI summary failed ({model}): {model_err}")
+                continue
+    except Exception as e:
+        logger.warning(f"Report AI summary import/init failed: {e}")
+
+    return _fallback()
+
+
+@app.route("/report")
+def report():
+    if not CACHE_FILE.exists():
+        return "<h2 style='font-family:sans-serif;padding:40px'>데이터가 없습니다. 잠시 후 다시 시도해주세요.</h2>", 404
+
+    start_date = request.args.get("start", "")
+    end_date   = request.args.get("end", "")
+    period     = request.args.get("period", "")
+    data = _read_cache()
+    reviews = data.get("reviews", [])
+
+    # 기간 필터 (start/end 우선, 없으면 period 사용)
+    if start_date and end_date:
+        reviews = [r for r in reviews if start_date <= (r.get("date") or "")[:10] <= end_date]
+    elif period and period != "all":
+        try:
+            days = int(period)
+            cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()[:10]
+            reviews = [r for r in reviews if (r.get("date") or "")[:10] >= cutoff]
+        except ValueError:
+            pass
+
+    store_reviews = [r for r in reviews if r.get("source") in ("google_play", "app_store")]
+    naver_reviews = [r for r in reviews if r.get("source") in ("naver_blog", "naver_cafe", "web_snippet")]
+
+    # 평균 평점 (스토어)
+    rated = [r for r in store_reviews if r.get("rating")]
+    avg_rating = round(sum(r["rating"] for r in rated) / len(rated), 1) if rated else 0
+
+    # 긍/부정 (전체)
+    total = len(reviews)
+    pos = sum(1 for r in reviews if r.get("sentiment") == "positive")
+    neg = sum(1 for r in reviews if r.get("sentiment") == "negative")
+    pos_pct = round(pos / total * 100) if total else 0
+    neg_pct = round(neg / total * 100) if total else 0
+
+    # 카테고리별 통계
+    cached_by_cat = data.get("summary", {}).get("by_category", {})
+    cat_stats: dict = {}
+    for r in reviews:
+        cat = r.get("category") or "기타"
+        if cat not in cat_stats:
+            cat_stats[cat] = {"count": 0, "neg": 0, "scores": []}
+        cat_stats[cat]["count"] += 1
+        if r.get("sentiment") == "negative":
+            cat_stats[cat]["neg"] += 1
+        if r.get("priority_score_raw"):
+            cat_stats[cat]["scores"].append(r["priority_score_raw"])
+
+    _ISSUE_NOISE = {
+        "오류","초기","의심","이용","사용","문제","확인","관련","기능","화면","앱",
+        "처리","수정","삭제","업데이트","추가","방법","과정","결과","내용","상태",
+        "실패","에러","버그","불편","현상","이유","경우","부분","정도","수준",
+    }
+    max_count = max((v["count"] for v in cat_stats.values()), default=1)
+    cat_list = []
+    for cat, stat in cat_stats.items():
+        neg_p = round(stat["neg"] / stat["count"] * 100) if stat["count"] else 0
+        avg_p = round(sum(stat["scores"]) / len(stat["scores"]), 1) if stat["scores"] else 0
+        raw_issues = (cached_by_cat.get(cat) or {}).get("top_issues", [])
+        top_issues = [kw for kw in raw_issues if kw not in _ISSUE_NOISE and len(kw) >= 2][:3]
+        cat_list.append({
+            "name": cat,
+            "count": stat["count"],
+            "neg_pct": neg_p,
+            "avg_priority": avg_p,
+            "top_issues": top_issues,
+            "bar_pct": round(stat["count"] / max_count * 100),
+        })
+    cat_list.sort(key=lambda x: -x["avg_priority"])
+
+    # 도넛 차트 SVG 세그먼트 계산
+    total_cat_count = sum(c["count"] for c in cat_list) or 1
+    donut_segments = []
+    cur_angle = 0.0
+    for c in cat_list:
+        sweep = c["count"] / total_cat_count * 360
+        if sweep < 2:
+            cur_angle += sweep
+            continue
+        donut_segments.append({
+            "name":  c["name"],
+            "count": c["count"],
+            "pct":   round(c["count"] / total_cat_count * 100, 1),
+            "color": _CAT_COLORS.get(c["name"], "#6b7280"),
+            "path":  _donut_segment_path(100, 100, 82, 44, cur_angle, cur_angle + sweep),
+        })
+        cur_angle += sweep
+
+    # 리뷰 샘플
+    neg_samples = sorted(
+        [r for r in store_reviews if r.get("sentiment") == "negative"],
+        key=lambda r: r.get("priority_score_raw", 0),
+        reverse=True
+    )[:5]
+    naver_samples = sorted(
+        naver_reviews,
+        key=lambda r: r.get("date") or "",
+        reverse=True
+    )[:5]
+
+    # AI 요약
+    ai_summary = _generate_report_summary(
+        total, len(store_reviews), avg_rating, pos_pct, neg_pct, cat_list
+    )
+
+    if start_date and end_date:
+        period_label = f"{start_date} ~ {end_date}"
+    else:
+        period_map = {"30": "최근 1개월", "90": "최근 3개월", "180": "최근 6개월", "365": "최근 1년", "all": "전체 기간"}
+        period_label = period_map.get(period, "최근 3개월")
+
+    return render_template(
+        "report.html",
+        period=period,
+        period_label=period_label,
+        generated_at=datetime.now().strftime("%Y년 %m월 %d일 %H:%M"),
+        total=total,
+        store_count=len(store_reviews),
+        naver_count=len(naver_reviews),
+        avg_rating=avg_rating,
+        pos_count=pos,
+        neg_count=neg,
+        pos_pct=pos_pct,
+        neg_pct=neg_pct,
+        cat_list=cat_list,
+        cat_colors=_CAT_COLORS,
+        donut_segments=donut_segments,
+        neg_samples=neg_samples,
+        naver_samples=naver_samples,
+        ai_summary=ai_summary,
+    )
+
+
 @app.route("/api/trends")
 def get_trends():
     if not CACHE_FILE.exists():

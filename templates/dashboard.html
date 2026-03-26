@@ -38,6 +38,7 @@ tailwind.config = {
   --c-border:       #E0E5F2;
   --c-border-sub:   rgba(224,229,242,0.5);
   --c-text:         #1B2559;
+  --c-text-mid:     #5D698B;
   --c-text-2:       #A3AED0;
   --c-text-3:       #8F9BBA;
   --c-nav-active-bg: rgba(66,42,251,0.08);
@@ -94,6 +95,7 @@ html.dark {
   --c-border:       rgba(255,255,255,0.09);
   --c-border-sub:   rgba(255,255,255,0.05);
   --c-text:         #ffffff;
+  --c-text-mid:     #d1d5db;
   --c-text-2:       #9ca3af;
   --c-text-3:       #6b7280;
   --c-nav-active-bg: rgba(99,102,241,0.30);
@@ -258,7 +260,7 @@ html, body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-
 .nav-item.active .nav-label { font-weight: 600; }
 .nav-badge-pill {
   position: absolute; top: -2px; right: 4px;
-  font-size: 9px; font-weight: 700; line-height: 1.6;
+  font-size: 9px; font-weight: 600; line-height: 1.6;
   padding: 0 5px; min-width: 16px; text-align: center;
   background: #6366f1; color: white; border-radius: 9999px;
 }
@@ -307,14 +309,15 @@ select option { background: var(--c-select-bg); color: var(--c-text); }
 /* ── 리뷰 테이블 ── */
 .reviews-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .reviews-table th {
-  padding: 7px 11px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .07em;
-  text-transform: uppercase; color: var(--c-text-3); border-bottom: 1px solid var(--c-border);
+  padding: 7px 11px; text-align: left; font-size: 12px; font-weight: 400; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--c-text); border-bottom: 1px solid var(--c-border);
   white-space: nowrap;
 }
 .reviews-table td {
   padding: 10px 11px; font-size: 13px; vertical-align: middle;
   border-bottom: 1px solid var(--c-tbl-border); color: var(--c-tbl-text);
 }
+.reviews-table--store td { padding-top: 13px; padding-bottom: 13px; }
 .reviews-table tr:last-child td { border-bottom: none !important; }
 .reviews-table tbody tr { transition: background .1s; cursor: pointer; }
 .reviews-table tbody tr:hover { background: var(--c-tbl-hover); }
@@ -322,14 +325,14 @@ select option { background: var(--c-select-bg); color: var(--c-text); }
 /* ── 카테고리 테이블 ── */
 .cat-table { width: 100%; border-collapse: collapse; }
 .cat-table th {
-  padding: 7px 9px; text-align: left; font-size: 10px; font-weight: 700;
-  letter-spacing: .07em; text-transform: uppercase; color: var(--c-text-3);
+  padding: 7px 9px; text-align: left; font-size: 12px; font-weight: 500;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--c-text-mid);
   border-bottom: 1px solid var(--c-border);
 }
 .cat-table td { padding: 10px 9px; border-bottom: 1px solid var(--c-tbl-border); vertical-align: middle; }
 .cat-table tr:last-child td { border-bottom: none; }
 .cat-table tr:hover td { background: var(--c-tbl-hover); }
-.cat-name-cell { display: flex; align-items: center; font-weight: 600; font-size: 13px; color: var(--c-text); }
+.cat-name-cell { display: flex; align-items: center; font-weight: 500; font-size: 12px; color: var(--c-text); }
 .cat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0; }
 .cat-kw-tag {
   display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 5px;
@@ -358,23 +361,23 @@ html:not(.dark) .sent-neg { background: rgba(238,93,80,.08); color: #EE5D50; bor
 
 /* ── 우선순위 ── */
 .priority-level-긴급,.priority-level-높음,.priority-level-중간,.priority-level-낮음 { font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px; }
-.priority-tag { display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:9999px; }
+.priority-tag { display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:9999px; }
 .priority-urgent { background:rgba(248,113,113,.10);color:#f87171;border:1px solid rgba(248,113,113,.2); }
 .priority-high   { background:rgba(248,113,113,.10);color:#f87171;border:1px solid rgba(248,113,113,.2); }
-.priority-mid    { background:rgba(251,191,36,.10); color:#fbbf24;border:1px solid rgba(251,191,36,.2); }
+.priority-mid    { background:rgba(251,146,60,.10); color:#fb923c;border:1px solid rgba(251,146,60,.2); }
 .priority-low    { background:rgba(52,211,153,.10); color:#6ee7b7;border:1px solid rgba(52,211,153,.2); }
 html:not(.dark) .priority-urgent { background:rgba(238,93,80,.08); color:#EE5D50; border-color:rgba(238,93,80,.2); }
 html:not(.dark) .priority-high   { background:rgba(238,93,80,.08); color:#EE5D50; border-color:rgba(238,93,80,.2); }
-html:not(.dark) .priority-mid    { background:rgba(245,158,11,.10); color:#d97706; border-color:rgba(245,158,11,.25); }
+html:not(.dark) .priority-mid    { background:rgba(249,115,22,.10); color:#f97316; border-color:rgba(249,115,22,.25); }
 html:not(.dark) .priority-low    { background:rgba(1,181,116,.08);  color:#01B574; border-color:rgba(1,181,116,.2); }
 /* 부정 비율 텍스트 색상 (우선순위와 동일) */
 .neg-pct-urgent { color:#f87171; }
 .neg-pct-high   { color:#f87171; }
-.neg-pct-mid    { color:#fbbf24; }
+.neg-pct-mid    { color:#fb923c; }
 .neg-pct-low    { color:#6ee7b7; }
 html:not(.dark) .neg-pct-urgent { color:#EE5D50; }
 html:not(.dark) .neg-pct-high   { color:#EE5D50; }
-html:not(.dark) .neg-pct-mid    { color:#d97706; }
+html:not(.dark) .neg-pct-mid    { color:#f97316; }
 html:not(.dark) .neg-pct-low    { color:#01B574; }
 
 /* ── 페이지네이션 ── */
@@ -392,7 +395,7 @@ html:not(.dark) .neg-pct-low    { color:#01B574; }
 /* ── 키워드 ── */
 .kw-item { display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9999px;background:var(--c-kw-bg);border:1px solid var(--c-kw-bd);font-size:13px;color:var(--c-kw-text);transition:all .15s; }
 .kw-item:hover { background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.3); }
-.kw-rank { font-size:11px;font-weight:700;color:#6366f1;min-width:14px;text-align:center; }
+.kw-rank { font-size:11px;font-weight:600;color:#6366f1;min-width:14px;text-align:center; }
 .kw-rank-top { color:#f59e0b; }
 
 /* ── stars / text-clamp ── */
@@ -407,6 +410,140 @@ body { background-color: #F4F7FE; }
 html.dark body { background-color: #111827; }
 #sidebar { background-color: #ffffff; }
 html.dark #sidebar { background-color: #030712; }
+
+/* ── 리포트 탭 ── */
+.rp-date-input {
+  width: 110px; padding: 6px 9px;
+  background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 7px;
+  font-size: 12px; font-weight: 500; color: var(--c-text); outline: none;
+  text-align: center; letter-spacing: .02em; transition: border-color .15s;
+}
+.rp-date-input::placeholder { color: var(--c-text-3); font-weight: 400; }
+.rp-date-input:focus { border-color: #6366f1; }
+.rp-date-input.rp-input-error { border-color: #f87171; }
+
+.rp-quick {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid var(--c-border);
+  background: transparent;
+  color: var(--c-text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.rp-quick:hover { background: var(--c-nav-hover); }
+.rp-quick.rp-active {
+  background: rgba(99,102,241,.12);
+  border-color: rgba(99,102,241,.35);
+  color: #818cf8;
+}
+html:not(.dark) .rp-quick.rp-active { color: #4f46e5; }
+
+.rp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--c-text-2);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+}
+.rp-item-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #818cf8;
+}
+html:not(.dark) .rp-item-icon { color: #6366f1; }
+
+.rp-gen-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .15s;
+}
+.rp-gen-btn:hover { background: #4338ca; }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+html.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+/* ── 인라인 캘린더 ── */
+.rp-cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.rp-cal-nav-btn {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--c-border);
+  background: transparent; cursor: pointer; color: var(--c-text-2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.rp-cal-nav-btn:hover { background: var(--c-nav-hover); }
+.rp-cal-nav-title { font-size: 13px; font-weight: 600; color: var(--c-text); }
+.rp-cal-weekdays {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.rp-cal-weekdays span {
+  text-align: center; font-size: 11px; font-weight: 500;
+  color: var(--c-text-3); padding: 4px 0;
+}
+.rp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.rp-cal-day {
+  aspect-ratio: 1; border: none; background: transparent; cursor: pointer;
+  border-radius: 6px; font-size: 12px; color: var(--c-text-2);
+  transition: background .1s, color .1s; position: relative;
+}
+.rp-cal-day:hover:not(.rp-cal-disabled) { background: var(--c-nav-hover); color: var(--c-text); }
+.rp-cal-day.rp-cal-range { background: rgba(99,102,241,.1); color: var(--c-text); border-radius: 0; }
+.rp-cal-day.rp-cal-start, .rp-cal-day.rp-cal-end {
+  background: #4f46e5; color: #fff; border-radius: 6px; font-weight: 600;
+}
+html:not(.dark) .rp-cal-day.rp-cal-range { background: rgba(99,102,241,.08); }
+.rp-cal-day.rp-cal-today::after {
+  content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: #818cf8;
+}
+.rp-cal-day.rp-cal-start.rp-cal-today::after,
+.rp-cal-day.rp-cal-end.rp-cal-today::after { background: rgba(255,255,255,.6); }
+.rp-cal-day.rp-cal-disabled { opacity: .3; cursor: default; }
+.rp-cal-empty { aspect-ratio: 1; }
+
+.rp-period-display {
+  margin-top: 14px; padding: 10px 13px;
+  background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rp-period-display .rp-period-label {
+  font-size: 11px; color: var(--c-text-3); margin-bottom: 2px;
+}
+.rp-period-display .rp-period-val {
+  font-size: 13px; font-weight: 600; color: var(--c-text);
+}
+.rp-period-hint {
+  font-size: 11px; color: var(--c-text-3); margin-top: 8px; text-align: center;
+}
 </style>
 </head>
 
@@ -455,6 +592,19 @@ html.dark #sidebar { background-color: #030712; }
       <span class="nav-label">네이버 리뷰</span>
     </button>
 
+    <!-- 구분선 -->
+    <div style="width:calc(100% - 24px);height:1px;background:var(--c-border);margin:6px 0;flex-shrink:0;"></div>
+
+    <!-- 리포트 -->
+    <button id="tab-btn-report" class="nav-item" onclick="switchTab('report')" title="리포트">
+      <div class="nav-rail-pill">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+        </svg>
+      </div>
+      <span class="nav-label">리포트</span>
+    </button>
+
   </nav>
 
   <!-- 사이드바 하단: 다크모드 토글 (원형 버튼) -->
@@ -482,7 +632,7 @@ html.dark #sidebar { background-color: #030712; }
   <!-- 헤더 -->
   <div class="px-8 pt-7 pb-4 flex items-start justify-between">
     <div>
-      <h1 class="text-xl font-semibold tracking-tight" style="color:var(--c-text);">스토어 리뷰 분석</h1>
+      <h1 class="text-[22px] font-semibold tracking-tight" style="color:var(--c-text);">스토어 리뷰 분석</h1>
       <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">Google Play · App Store · 최근 1년 기준</p>
     </div>
     <div class="flex items-center gap-3 mt-1">
@@ -509,57 +659,57 @@ html.dark #sidebar { background-color: #030712; }
         <!-- 총 수집 리뷰 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">총 수집 리뷰</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">총 수집 리뷰</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(99,102,241,0.12);">
               <svg style="width:16px;height:16px;color:#818cf8;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-total">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);" id="kpi-total-sub">모든 소스 합계</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-total">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);" id="kpi-total-sub">모든 소스 합계</dd>
         </div>
 
         <!-- 평균 평점 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">평균 평점</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">평균 평점</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.12);">
               <svg style="width:16px;height:16px;color:#f59e0b;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-rating">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);" id="kpi-rating-sub">App Store / Play Store</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-rating">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);" id="kpi-rating-sub">App Store / Play Store</dd>
         </div>
 
         <!-- 부정 리뷰 비율 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">부정 리뷰 비율</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">부정 리뷰 비율</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.12);">
               <svg style="width:16px;height:16px;color:#f87171;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-negative">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">1~2점 또는 부정 VOC</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-negative">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">1~2점 또는 부정 VOC</dd>
         </div>
 
         <!-- 최근 7일 리뷰 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">최근 7일 리뷰</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">최근 7일 리뷰</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.12);">
               <svg style="width:16px;height:16px;color:#34d399;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-recent">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">신규 접수 VOC</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="kpi-recent">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">신규 접수 VOC</dd>
         </div>
 
       </dl>
@@ -568,13 +718,13 @@ html.dark #sidebar { background-color: #030712; }
     <!-- 차트 행 1 -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div class="rounded-[20px] p-5 ring-1" style="background:var(--c-card);ring-color:transparent;box-shadow:var(--c-card-shadow);">
-        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">평점 분포</h3>
-        <p class="text-xs mb-4" style="color:var(--c-text-3);">앱스토어 + 플레이스토어</p>
+        <h3 class="text-[15px] font-semibold mb-0.5" style="color:var(--c-text);">평점 분포</h3>
+        <p class="text-[13px] mb-4" style="color:var(--c-text-3);">앱스토어 + 플레이스토어</p>
         <div id="chart-rating-dist" style="height:220px;"></div>
       </div>
       <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
-        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">최근 8주 평균 평점</h3>
-        <p class="text-xs mb-4" style="color:var(--c-text-3);">Google Play · App Store 주별 평균</p>
+        <h3 class="text-[15px] font-semibold mb-0.5" style="color:var(--c-text);">주별 평균 평점</h3>
+        <p class="text-[13px] mb-4" style="color:var(--c-text-3);">최근 8주</p>
         <div id="chart-rating-trend" style="height:220px;"></div>
       </div>
     </div>
@@ -584,8 +734,8 @@ html.dark #sidebar { background-color: #030712; }
       <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
         <div class="flex items-start justify-between mb-0.5">
           <div>
-            <h3 class="text-sm font-semibold" style="color:var(--c-text);">VOC 카테고리 분포</h3>
-            <p class="text-xs mt-0.5" style="color:var(--c-text-3);">주요 이슈 유형 비율</p>
+            <h3 class="text-[15px] font-semibold" style="color:var(--c-text);">VOC 카테고리 분포</h3>
+            <p class="text-[13px] mt-0.5" style="color:var(--c-text-3);">주요 이슈 유형 비율</p>
           </div>
           <button onclick="openKwModal()" title="키워드 설정"
             class="flex items-center justify-center rounded-lg transition-colors"
@@ -603,7 +753,7 @@ html.dark #sidebar { background-color: #030712; }
         </div>
       </div>
       <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
-        <h3 class="text-sm font-semibold mb-4" style="color:var(--c-text);">VOC 이슈 분석</h3>
+        <h3 class="text-[15px] font-semibold mb-4" style="color:var(--c-text);">VOC 이슈 분석</h3>
         <div id="cat-cards"></div>
       </div>
     </div>
@@ -612,8 +762,8 @@ html.dark #sidebar { background-color: #030712; }
     <div class="rounded-[20px] overflow-hidden" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
       <div class="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div>
-          <h3 class="text-sm font-semibold" style="color:var(--c-text);">스토어 리뷰</h3>
-          <p class="text-xs mt-0.5" style="color:var(--c-text-3);" id="store-count-badge"></p>
+          <h3 class="text-[15px] font-semibold" style="color:var(--c-text);">스토어 리뷰</h3>
+          <p class="text-[13px] mt-0.5" style="color:var(--c-text-3);" id="store-count-badge"></p>
         </div>
         <div class="flex flex-wrap gap-2">
           <select id="store-filter-source" onchange="applyStoreFilters()">
@@ -621,9 +771,6 @@ html.dark #sidebar { background-color: #030712; }
           </select>
           <select id="store-filter-category" onchange="applyStoreFilters()">
             <option value="">모든 카테고리</option><option value="앱 성능/속도">앱 성능/속도</option><option value="UI/UX">UI/UX</option><option value="포인트/혜택">포인트/혜택</option><option value="배송/주문">배송/주문</option><option value="상품">상품</option><option value="로그인/인증">로그인/인증</option><option value="기타">기타</option>
-          </select>
-          <select id="store-filter-sentiment" onchange="applyStoreFilters()">
-            <option value="">모든 감성</option><option value="negative">부정</option><option value="neutral">중립</option><option value="positive">긍정</option>
           </select>
           <select id="store-filter-rating" onchange="applyStoreFilters()">
             <option value="">모든 평점</option><option value="1">★ 1점</option><option value="2">★★ 2점</option><option value="3">★★★ 3점</option><option value="4">★★★★ 4점</option><option value="5">★★★★★ 5점</option>
@@ -640,16 +787,15 @@ html.dark #sidebar { background-color: #030712; }
           </div>
         </div>
       </div>
-      <div class="px-5">
+      <div class="px-5 pb-5" style="overflow-y:auto;max-height:calc(100vh - 120px);min-height:300px;">
         <table class="reviews-table">
-          <thead><tr>
-            <th style="width:86px;">소스</th><th style="width:80px;">평점</th><th style="width:68px;">감성</th>
-            <th style="width:108px;">카테고리</th><th>내용</th><th style="width:96px;">날짜</th>
+          <thead><tr style="position:sticky;top:0;z-index:2;background:var(--c-card);">
+            <th style="width:96px;">소스</th><th style="width:96px;">카테고리</th>
+            <th style="width:96px;">평점</th><th style="padding-right:56px;">내용</th><th style="width:96px;">날짜</th>
           </tr></thead>
-          <tbody id="store-reviews-tbody"></tbody>
+          <tbody id="store-reviews-tbody" class="reviews-table--store"></tbody>
         </table>
       </div>
-      <div class="pagination px-5 py-4" id="store-pagination"></div>
     </div>
 
   </div>
@@ -660,7 +806,7 @@ html.dark #sidebar { background-color: #030712; }
   <!-- 헤더 -->
   <div class="px-8 pt-7 pb-4 flex items-start justify-between">
     <div>
-      <h1 class="text-xl font-semibold tracking-tight" style="color:var(--c-text);">네이버 리뷰 분석</h1>
+      <h1 class="text-[22px] font-semibold tracking-tight" style="color:var(--c-text);">네이버 리뷰 분석</h1>
       <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">블로그 · 카페 · 웹문서 · 최근 1년 기준</p>
     </div>
     <div class="flex items-center gap-3 mt-1">
@@ -687,57 +833,57 @@ html.dark #sidebar { background-color: #030712; }
         <!-- 수집 블로그 포스트 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">블로그</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">블로그</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.12);">
               <svg style="width:16px;height:16px;color:#34d399;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-blog">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">수집된 포스트</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-blog">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">수집된 포스트</dd>
         </div>
 
         <!-- 수집 카페 게시글 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">카페</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">카페</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(99,102,241,0.12);">
               <svg style="width:16px;height:16px;color:#818cf8;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-cafe">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">수집된 게시글</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-cafe">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">수집된 게시글</dd>
         </div>
 
         <!-- 수집 웹 검색 결과 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">웹 문서</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">웹 문서</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.12);">
               <svg style="width:16px;height:16px;color:#60a5fa;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-web">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">수집된 웹 검색 결과</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-web">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">수집된 웹 검색 결과</dd>
         </div>
 
         <!-- 최근 7일 리뷰 -->
         <div class="rounded-[20px] px-5 py-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
           <div class="flex items-center justify-between mb-3">
-            <dt class="text-sm font-medium" style="color:var(--c-text-2);">최근 7일 리뷰</dt>
+            <dt class="text-[13px] font-medium" style="color:var(--c-text-2);">최근 7일 리뷰</dt>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.12);">
               <svg style="width:16px;height:16px;color:#34d399;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
           </div>
-          <dd class="text-3xl font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-7d">–</dd>
-          <dd class="text-xs mt-1" style="color:var(--c-text-3);">신규 접수 VOC</dd>
+          <dd class="text-[28px] font-semibold tracking-tight" style="color:var(--c-text);" id="nkpi-7d">–</dd>
+          <dd class="text-[13px] mt-1" style="color:var(--c-text-3);">신규 접수 VOC</dd>
         </div>
 
       </dl>
@@ -748,8 +894,8 @@ html.dark #sidebar { background-color: #030712; }
 
       <!-- 좌: 네이버 리뷰 카테고리 분포 도넛 -->
       <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
-        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">리뷰 카테고리 분포</h3>
-        <p class="text-xs mb-0.5" style="color:var(--c-text-3);">주요 상품 카테고리 비율</p>
+        <h3 class="text-[15px] font-semibold mb-0.5" style="color:var(--c-text);">리뷰 카테고리 분포</h3>
+        <p class="text-[13px] mb-0.5" style="color:var(--c-text-3);">주요 상품 카테고리 비율</p>
         <div class="flex items-center justify-center" style="flex:1;min-height:300px;padding-top:20px;gap:40px;">
           <div id="chart-naver-donut" style="width:280px;flex-shrink:0;height:300px;min-height:300px;"></div>
           <div id="naver-donut-legend" class="flex flex-col justify-center" style="min-width:108px;gap:10px;"></div>
@@ -758,8 +904,8 @@ html.dark #sidebar { background-color: #030712; }
 
       <!-- 우: 인기 키워드 TOP 10 -->
       <div class="rounded-[20px] p-5" style="background:var(--c-card);box-shadow:var(--c-card-shadow);display:flex;flex-direction:column;">
-        <h3 class="text-sm font-semibold mb-0.5" style="color:var(--c-text);">M몰 인기 상품 키워드 TOP 10</h3>
-        <p class="text-xs" style="color:var(--c-text-3);margin-bottom:20px;">네이버 블로그/카페 기준 현대카드 M몰 인기 상품</p>
+        <h3 class="text-[15px] font-semibold mb-0.5" style="color:var(--c-text);">M몰 구매 상품 키워드</h3>
+        <p class="text-[13px]" style="color:var(--c-text-3);margin-bottom:20px;">최근 1년 네이버 언급 상품 기준</p>
         <div id="kw-list" style="flex:1;display:flex;align-items:center;">
           <span class="text-xs" style="color:var(--c-text-3);">불러오는 중...</span>
         </div>
@@ -771,15 +917,15 @@ html.dark #sidebar { background-color: #030712; }
     <div class="rounded-[20px] overflow-hidden" style="background:var(--c-card);box-shadow:var(--c-card-shadow);">
       <div class="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div>
-          <h3 class="text-sm font-semibold" style="color:var(--c-text);">네이버 블로그 · 카페 리뷰</h3>
-          <p class="text-xs mt-0.5" style="color:var(--c-text-3);" id="web-count-badge"></p>
+          <h3 class="text-[15px] font-semibold" style="color:var(--c-text);">네이버 블로그 · 카페 리뷰</h3>
+          <p class="text-[13px] mt-0.5" style="color:var(--c-text-3);" id="web-count-badge"></p>
         </div>
         <div class="flex flex-wrap gap-2">
           <select id="web-filter-source" onchange="applyWebFilters()">
             <option value="">모든 소스</option><option value="naver_blog">네이버 블로그</option><option value="naver_cafe">네이버 카페</option><option value="web_snippet">웹 검색</option>
           </select>
           <select id="web-filter-category" onchange="applyWebFilters()">
-            <option value="">모든 카테고리</option><option value="전자기기">전자기기</option><option value="생활/가전">생활/가전</option><option value="패션/잡화">패션/잡화</option><option value="포인트 활용">포인트 활용</option><option value="이벤트/딜">이벤트/딜</option><option value="식음료/여행">식음료/여행</option><option value="기타">기타</option>
+            <option value="">모든 카테고리</option><option value="전자기기">전자기기</option><option value="생활/가전">생활/가전</option><option value="패션/잡화">패션/잡화</option><option value="뷰티/미용">뷰티/미용</option><option value="이벤트/딜">이벤트/딜</option><option value="식음료/여행">식음료/여행</option><option value="기타">기타</option>
           </select>
           <select id="web-filter-sort" onchange="applyWebFilters()">
             <option value="date">최신순</option><option value="priority">우선순위순</option>
@@ -793,20 +939,143 @@ html.dark #sidebar { background-color: #030712; }
           </div>
         </div>
       </div>
-      <div class="px-5">
+      <div class="px-5 pb-5" style="overflow-y:auto;max-height:calc(100vh - 120px);min-height:300px;">
         <table class="reviews-table">
-          <thead><tr>
+          <thead><tr style="position:sticky;top:0;z-index:2;background:var(--c-card);">
             <th style="width:86px;">소스</th><th style="width:108px;">카테고리</th>
-            <th>내용</th><th style="width:90px;">원문</th><th style="width:96px;">날짜</th>
+            <th>내용</th><th style="width:130px;">원문</th><th style="width:96px;">날짜</th>
           </tr></thead>
           <tbody id="web-reviews-tbody"></tbody>
         </table>
       </div>
-      <div class="pagination px-5 py-4" id="web-pagination"></div>
     </div>
 
   </div>
 </div><!-- /naver -->
+
+<!-- ═══ REPORT TAB ═══ -->
+<div id="tab-report" style="display:none;">
+  <!-- hidden inputs (JS 공유용) -->
+  <input type="hidden" id="rp-start">
+  <input type="hidden" id="rp-end">
+
+  <div class="px-8 pt-7 pb-5">
+    <h1 class="text-[22px] font-semibold tracking-tight" style="color:var(--c-text);">리포트</h1>
+    <p class="mt-0.5 text-sm" style="color:var(--c-text-3);">기간을 설정하고 M몰 VOC 분석 리포트를 PDF로 내려받으세요</p>
+  </div>
+
+  <div class="px-8 pb-10" style="display:grid;grid-template-columns:1.35fr 1fr;gap:16px;max-width:920px;">
+
+    <!-- ── 좌: 분석 기간 설정 ── -->
+    <div class="rounded-2xl p-6" style="background:var(--c-card);border:1px solid var(--c-border);">
+      <p style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:14px;">분석 기간 설정</p>
+
+      <!-- 선택된 기간 (텍스트 입력, 달력 위) -->
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;">
+        <input type="text" id="rp-start-input" class="rp-date-input" placeholder="YYYY-MM-DD" maxlength="10"
+          oninput="rpAutoFormat(this);rpHandleTextInput('start',this.value)">
+        <span style="color:var(--c-text-3);font-size:13px;flex-shrink:0;">–</span>
+        <input type="text" id="rp-end-input" class="rp-date-input" placeholder="YYYY-MM-DD" maxlength="10"
+          oninput="rpAutoFormat(this);rpHandleTextInput('end',this.value)">
+        <button onclick="rpCalClear()" title="초기화"
+          style="flex-shrink:0;padding:5px 8px;background:none;border:1px solid var(--c-border);border-radius:6px;color:var(--c-text-3);font-size:11px;cursor:pointer;transition:background .12s;"
+          onmouseenter="this.style.background='var(--c-nav-hover)'" onmouseleave="this.style.background='none'">초기화</button>
+      </div>
+
+      <!-- 빠른 선택 -->
+      <div style="display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:16px;overflow:hidden;">
+        <button class="rp-quick" onclick="setReportQuick('this-month',this)">이번 달</button>
+        <button class="rp-quick" onclick="setReportQuick('3m',this)">최근 3개월</button>
+        <button class="rp-quick rp-active" onclick="setReportQuick('6m',this)">최근 6개월</button>
+        <button class="rp-quick" onclick="setReportQuick('1y',this)">최근 1년</button>
+        <button class="rp-quick" onclick="setReportQuick('this-year',this)">올해</button>
+      </div>
+
+      <!-- 인라인 캘린더 -->
+      <div>
+        <div class="rp-cal-nav">
+          <button class="rp-cal-nav-btn" onclick="rpCalMove(-1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+          </button>
+          <span id="rp-cal-title" class="rp-cal-nav-title"></span>
+          <button class="rp-cal-nav-btn" onclick="rpCalMove(1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          </button>
+        </div>
+        <div class="rp-cal-weekdays">
+          <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+        </div>
+        <div id="rp-cal-grid" class="rp-cal-grid"></div>
+      </div>
+      <p class="rp-period-hint" id="rp-period-hint" style="margin-top:10px;">시작일을 먼저 선택하세요</p>
+    </div>
+
+    <!-- ── 우: 포함 항목 + 생성 버튼 ── -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="rounded-2xl p-6" style="background:var(--c-card);border:1px solid var(--c-border);">
+        <p style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:14px;">리포트 포함 항목</p>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div class="rp-item">
+            <svg class="rp-item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+            <div>
+              <div style="font-weight:600;font-size:12px;color:var(--c-text);">AI 인사이트</div>
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:1px;">요약 · 주요 이슈 3가지 · 개선 권고</div>
+            </div>
+          </div>
+          <div class="rp-item">
+            <svg class="rp-item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+            </svg>
+            <div>
+              <div style="font-weight:600;font-size:12px;color:var(--c-text);">KPI 요약</div>
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:1px;">평균 평점 · 긍/부정 비율 · 총 리뷰 수</div>
+            </div>
+          </div>
+          <div class="rp-item">
+            <svg class="rp-item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
+            </svg>
+            <div>
+              <div style="font-weight:600;font-size:12px;color:var(--c-text);">카테고리별 분포 및 이슈 분석</div>
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:1px;">VOC 분류 · 부정 비율 · 우선순위</div>
+            </div>
+          </div>
+          <div class="rp-item">
+            <svg class="rp-item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>
+            </svg>
+            <div>
+              <div style="font-weight:600;font-size:12px;color:var(--c-text);">주별 평점 트렌드</div>
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:1px;">기간 내 주별 평균 평점 추이</div>
+            </div>
+          </div>
+          <div class="rp-item">
+            <svg class="rp-item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+            </svg>
+            <div>
+              <div style="font-weight:600;font-size:12px;color:var(--c-text);">리뷰 원문 샘플</div>
+              <div style="font-size:11px;color:var(--c-text-3);margin-top:1px;">스토어 부정 리뷰 · 네이버 언급 최신순</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 생성 버튼 -->
+      <button class="rp-gen-btn" onclick="openReport()">
+        <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+        </svg>
+        리포트 생성 및 PDF 저장
+      </button>
+      <p style="font-size:11px;color:var(--c-text-3);text-align:center;margin-top:-8px;">새 탭에서 열리면 Cmd+P / Ctrl+P 로 PDF 저장</p>
+
+    </div>
+  </div>
+</div><!-- /report -->
 
 </main>
 </div><!-- /main wrapper -->
@@ -837,7 +1106,7 @@ html.dark #sidebar { background-color: #030712; }
     <div class="flex items-center justify-between mb-5">
       <div>
         <h2 class="text-base font-semibold" style="color:var(--c-modal-text);">VOC 카테고리 키워드 설정</h2>
-        <p class="text-xs mt-0.5" style="color:var(--c-text-3);">카테고리별 키워드를 추가/삭제하면 리뷰 분류에 즉시 반영됩니다.</p>
+        <p class="text-[13px] mt-0.5" style="color:var(--c-text-3);">카테고리별 키워드를 추가/삭제하면 리뷰 분류에 즉시 반영됩니다.</p>
       </div>
       <button onclick="closeKwModal()" style="background:transparent;border:none;cursor:pointer;font-size:18px;color:var(--c-text-3);">✕</button>
     </div>
@@ -854,8 +1123,6 @@ html.dark #sidebar { background-color: #030712; }
 let allData = null;
 let pollingInterval = null;
 let _loadingData = false;
-let storePage = 1, webPage = 1;
-const PAGE_SIZE = 10, WEB_PAGE_SIZE = 10;
 let _storePagedReviews = [], _webPagedReviews = [];
 let _activeTab = 'store', _kwLoaded = false;
 
@@ -939,7 +1206,7 @@ function updateChartsTheme() {
   // 바 차트 2개: 축 색상 + 텍스트 색상 (각 차트 고유 layout 값 고정)
   const chartExtras = {
     'chart-rating-dist': { 'yaxis.automargin': true, 'yaxis.tickpad': 6, 'margin.l': 48, 'margin.r': 44, 'margin.t': 8, 'margin.b': 16 },
-    'chart-rating-trend': { 'xaxis.range': [-0.3, Math.max(0, ((document.getElementById('chart-rating-trend')||{}).data||[{}])[0]?.x?.length - 1 || 0) + 0.3], 'yaxis.range': [1, 5], 'margin.t': 8, 'margin.b': 36, 'margin.l': 36, 'margin.r': 16 },
+    'chart-rating-trend': { 'xaxis.range': [-0.3, Math.max(0, ((document.getElementById('chart-rating-trend')||{}).data||[{}])[0]?.x?.length - 1 || 0) + 0.3], 'yaxis.range': [1, 5], 'margin.t': 8, 'margin.b': 20, 'margin.l': 44, 'margin.r': 16 },
   };
   ['chart-rating-dist', 'chart-rating-trend'].forEach(id => {
     const el = document.getElementById(id);
@@ -981,10 +1248,13 @@ syncThemeIcon();
 // ── TAB ──
 function switchTab(tab) {
   _activeTab = tab;
-  document.getElementById('tab-store').style.display = tab === 'store' ? '' : 'none';
-  document.getElementById('tab-naver').style.display = tab === 'naver' ? '' : 'none';
-  document.getElementById('tab-btn-store').classList.toggle('active', tab === 'store');
-  document.getElementById('tab-btn-naver').classList.toggle('active', tab === 'naver');
+  document.getElementById('tab-store').style.display  = tab === 'store'  ? '' : 'none';
+  document.getElementById('tab-naver').style.display  = tab === 'naver'  ? '' : 'none';
+  document.getElementById('tab-report').style.display = tab === 'report' ? '' : 'none';
+  document.getElementById('tab-btn-store').classList.toggle('active',  tab === 'store');
+  document.getElementById('tab-btn-naver').classList.toggle('active',  tab === 'naver');
+  document.getElementById('tab-btn-report').classList.toggle('active', tab === 'report');
+  if(tab === 'report') rpCalInit();
   // 상단 타이틀 업데이트
   const titles = {
     store: { title: '스토어 리뷰 분석', sub: 'Google Play · App Store · 최근 1년 기준' },
@@ -1025,14 +1295,14 @@ async function loadPopularKeywords() {
     loadPopularKeywords._retry = 0;
     const row = (kw) => `
       <tr onclick="openKwSourceModal('${escapeHtml(kw.keyword)}')" style="cursor:pointer;" onmouseover="this.style.background='var(--c-tbl-hover)'" onmouseout="this.style.background=''">
-        <td style="padding:11px 6px 11px 6px;font-size:12px;font-weight:700;color:${kw.rank<=3?'#f59e0b':'#6366f1'};width:22px;">${kw.rank}</td>
+        <td style="padding:11px 6px 11px 6px;font-size:12px;font-weight:600;color:${kw.rank<=3?'#f59e0b':'#6366f1'};width:22px;">${kw.rank}</td>
         <td style="padding:11px 6px 11px 0;font-size:13px;color:var(--c-text);font-weight:500;">${escapeHtml(kw.keyword)}</td>
         <td style="padding:11px 6px 11px 0;font-size:11px;color:var(--c-text-3);text-align:right;white-space:nowrap;">${kw.count ? kw.count+'건' : '–'}</td>
       </tr>`;
     const thead = `<thead><tr>
-      <th style="text-align:left;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 6px;width:22px;">#</th>
-      <th style="text-align:left;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 0;">키워드</th>
-      <th style="text-align:right;font-size:11px;font-weight:500;color:var(--c-text-3);padding:0 6px 7px 0;">언급수</th>
+      <th style="text-align:left;font-size:12px;font-weight:400;color:var(--c-text-mid);padding:0 6px 7px 6px;width:22px;">#</th>
+      <th style="text-align:left;font-size:12px;font-weight:400;color:var(--c-text-mid);padding:0 6px 7px 0;">키워드</th>
+      <th style="text-align:right;font-size:12px;font-weight:400;color:var(--c-text-mid);padding:0 6px 7px 0;">언급수</th>
     </tr></thead>`;
     const left = kws.slice(0,5); const right = kws.slice(5,10);
     const mkTable = (items) => `<table style="width:100%;border-collapse:collapse;">${thead}<tbody>${items.map(row).join('')}</tbody></table>`;
@@ -1177,7 +1447,6 @@ function renderDashboard(data) {
   renderKPIs(ss);
   renderCharts({...data, summary:ss});
   renderCategoryCards(ss.by_category||{});
-  storePage=1; webPage=1;
   renderStoreReviews(); renderWebReviews(); renderNaverKPIs(data);
   const bs=(data.summary||{}).by_source||{};
   const nT=(bs.naver_blog?.count||0)+(bs.naver_cafe?.count||0)+(bs.web_snippet?.count||0);
@@ -1267,22 +1536,27 @@ function renderCharts(data) {
   while (displayKeys.length > 1 && !weekMap[displayKeys[displayKeys.length - 1]]) {
     displayKeys.pop();
   }
-  const trendX = displayKeys.map(k => k.substring(5).replace('-','/'));
+  const trendX = displayKeys.map(k => { const [m,d] = k.substring(5).split('-'); return `${+m}/${+d}`; });
   const trendY = displayKeys.map(k => weekMap[k] ? +(weekMap[k].sum/weekMap[k].cnt).toFixed(2) : null);
   const trendMax = displayKeys.length - 1;
   Plotly.react('chart-rating-trend', [{
     type:'scatter', mode:'lines+markers', x:trendX, y:trendY, connectgaps:true,
     fill:'tozeroy',
     fillcolor:'rgba(99,102,241,0.01)',
-    line:{color:'#6366f1',width:2.5,shape:'spline'},
+    line:{color:'#6366f1',width:2.5,shape:'linear'},
     marker:{color:'#6366f1',size:6,line:{color:'#fff',width:2}},
     hovertemplate:'%{x} 주<br>평균 평점: %{y}<extra></extra>',
     name:'평균 평점',
   }], {...L, showlegend:false,
     xaxis:{...AX, tickangle:0, range:[-0.3, trendMax + 0.3]},
-    yaxis:{...AX, range:[1, 5]},
-    margin:{t:8,b:36,l:36,r:16}
-  }, CFG).then(() => applyTrendGradient());
+    yaxis:{...AX, range:[1, 5], ticksuffix:'점'},
+    margin:{t:8,b:20,l:44,r:16}
+  }, CFG).then(() => {
+    applyTrendGradient();
+    const trendEl = document.getElementById('chart-rating-trend');
+    trendEl.removeAllListeners && trendEl.removeAllListeners('plotly_relayout');
+    trendEl.on('plotly_relayout', () => setTimeout(applyTrendGradient, 50));
+  });
 
   // 3. 도넛
   const bc = s.by_category || {};
@@ -1291,7 +1565,7 @@ function renderCharts(data) {
   if (catNames.length > 0) {
     const total = catVals.reduce((a,b)=>a+b, 0);
     Plotly.react('chart-cat-donut', [{
-      type:'pie', hole:.56, sort:false, direction:'clockwise',
+      type:'pie', hole:.50, sort:false, direction:'clockwise',
       labels:catNames, values:catVals, domain:{x:[0,1],y:[0.02,.98]},
       marker:{colors:catNames.map(k=>CAT_COLORS[k]||'#6b7280'),line:{color:'rgba(0,0,0,.1)',width:2}},
       textinfo:'percent', textposition:'auto',
@@ -1325,14 +1599,14 @@ const CAT_FIXED_KWS={
   '기타':['가격','pc버전','기타'],
 };
 
-const NAVER_CAT_COLORS={'전자기기':'#6366f1','생활/가전':'#34d399','패션/잡화':'#f472b6','포인트 활용':'#fbbf24','이벤트/딜':'#f87171','식음료/여행':'#38bdf8','기타':'#6b7280'};
+const NAVER_CAT_COLORS={'전자기기':'#6366f1','생활/가전':'#34d399','패션/잡화':'#f87171','뷰티/미용':'#fbbf24','이벤트/딜':'#8b5cf6','식음료/여행':'#38bdf8','기타':'#6b7280'};
 const NAVER_CAT_KEYWORDS={
-  '전자기기':['애플','삼성','갤럭시','맥북','아이폰','이어폰','애플워치','카메라','오닉스','이북리더기','다이슨','키보드','노트북','에어팟','스마트워치','태블릿'],
-  '생활/가전':['가습기','음식물처리기','침대','청소기','의자','히터','가전','주방','식기','가구','매트리스','시몬스','조명','선풍기'],
-  '패션/잡화':['의류','가방','신발','캐리어','볼캡','패션','세인트제임스','어그','운동화','티셔츠'],
-  '포인트 활용':['포인트 전환','포인트 사용','엠포인트','M포인트','포인트몰','포인트 현금','포인트 효율','적립방법','포인트로'],
+  '전자기기':['애플','삼성','갤럭시','맥북','아이폰','이어폰','애플워치','카메라','오닉스','이북리더기','다이슨','키보드','노트북','에어팟','스마트워치','태블릿','닌텐도','조이콘','드론','DJI','에어랩','하만카돈','스피커','커피머신','에스프레소'],
+  '생활/가전':['가습기','음식물처리기','침대','청소기','의자','히터','가전','주방','식기','가구','매트리스','시몬스','조명','선풍기','디퓨저','온풍기','전기장판','소화기','멀티탭','냉풍기','주전자','찜질','수건','그릇','에어프라이어','랜턴','루메나','스노우피크','향초'],
+  '패션/잡화':['의류','가방','신발','캐리어','볼캡','패션','세인트제임스','어그','운동화','티셔츠','백팩','런닝화','러닝화','니트','이발기','케이스','목줄','키링','폴로','뉴발란스','스니커즈'],
+  '뷰티/미용':['화장품','스킨','쿠션','세럼','로션','마스크팩','제모','마사지','영양제','비타민','풀리오','헤라','정샘물','아토팜','파티온','논픽션','향수','크림','파운데이션','토너','앰플'],
   '이벤트/딜':['특가','할인','공구','애플데이','이벤트 상품','프로모션','기획전','쿠폰'],
-  '식음료/여행':['뷔페','라운지','호텔','레스토랑','공항','여행','오마카세','런치','디너'],
+  '식음료/여행':['뷔페','라운지','호텔','레스토랑','공항','여행','오마카세','런치','디너','피자','치킨','커피','텀블러','올리브오일','카페','맛집'],
 };
 
 function getNaverCat(r) {
@@ -1371,7 +1645,7 @@ function renderNaverDonut(data) {
   if (!names.length) return;
   const total = vals.reduce((a,b)=>a+b,0);
   Plotly.react('chart-naver-donut', [{
-    type:'pie', hole:.56, sort:false, direction:'clockwise',
+    type:'pie', hole:.50, sort:false, direction:'clockwise',
     labels:names, values:vals, domain:{x:[0,1],y:[0.02,.98]},
     marker:{colors:names.map(k=>NAVER_CAT_COLORS[k]||'#6b7280'),line:{color:'rgba(0,0,0,.1)',width:2}},
     textinfo:'percent', textposition:'auto',
@@ -1411,8 +1685,8 @@ function renderCategoryCards(bc) {
         return `<tr>
           <td><div class="cat-name-cell"><span class="cat-dot" style="background:${c}"></span>${name}</div></td>
           <td><div style="display:flex;flex-wrap:wrap;gap:4px">${kws.map(k=>`<span class="cat-kw-tag">${k}</span>`).join('')}</div></td>
-          <td style="text-align:right;font-weight:700;font-size:14px;color:var(--c-text-3)">${info.count}</td>
-          <td class="${negPctClass(n)}" style="text-align:right;font-weight:700;font-size:14px;">${n}%</td>
+          <td style="text-align:right;font-weight:600;font-size:14px;color:var(--c-text-3)">${info.count}</td>
+          <td class="${negPctClass(n)}" style="text-align:right;font-weight:600;font-size:14px;">${n}%</td>
           <td style="text-align:right">${priorityTag(n)}</td>
         </tr>`;}).join('')}
       </tbody>
@@ -1435,20 +1709,16 @@ function filterAndSort(reviews,{source,category,sentiment,rating,sort,q,period})
   return r;
 }
 
-function applyStoreFilters(){storePage=1;renderStoreReviews();}
-function applyWebFilters(){webPage=1;renderWebReviews();}
+function applyStoreFilters(){renderStoreReviews();}
+function applyWebFilters(){renderWebReviews();}
 
 function renderStoreReviews(){
   if(!allData)return;
   const base=allData.reviews.filter(r=>['google_play','app_store'].includes(r.source));
-  const f={source:document.getElementById('store-filter-source')?.value||'',category:document.getElementById('store-filter-category')?.value||'',sentiment:document.getElementById('store-filter-sentiment')?.value||'',rating:document.getElementById('store-filter-rating')?.value||'',sort:document.getElementById('store-filter-sort')?.value||'date',q:document.getElementById('store-filter-search')?.value||'',period:document.getElementById('store-filter-period')?.value||''};
-  const filtered=filterAndSort(base,f);
-  const total=filtered.length;const pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
-  if(storePage>pages)storePage=pages;
-  _storePagedReviews=filtered.slice((storePage-1)*PAGE_SIZE,storePage*PAGE_SIZE);
-  document.getElementById('store-count-badge').textContent=`${total.toLocaleString()}건`;
+  const f={source:document.getElementById('store-filter-source')?.value||'',category:document.getElementById('store-filter-category')?.value||'',sentiment:'',rating:document.getElementById('store-filter-rating')?.value||'',sort:document.getElementById('store-filter-sort')?.value||'date',q:document.getElementById('store-filter-search')?.value||'',period:document.getElementById('store-filter-period')?.value||''};
+  _storePagedReviews=filterAndSort(base,f);
+  document.getElementById('store-count-badge').textContent=`${_storePagedReviews.length.toLocaleString()}건`;
   renderReviewRows('store-reviews-tbody',_storePagedReviews,'openStoreModal',true);
-  renderPaginationFor('store-pagination',storePage,pages,'store');
 }
 
 function renderWebReviews(){
@@ -1458,12 +1728,9 @@ function renderWebReviews(){
   const f={source:document.getElementById('web-filter-source')?.value||'',category:'',sentiment:document.getElementById('web-filter-sentiment')?.value||'',rating:'',sort:document.getElementById('web-filter-sort')?.value||'date',q:document.getElementById('web-filter-search')?.value||'',period:document.getElementById('web-filter-period')?.value||''};
   let filtered=filterAndSort(base,f);
   if(catFilter) filtered=filtered.filter(r=>getNaverCat(r)===catFilter);
-  const total=filtered.length;const pages=Math.max(1,Math.ceil(total/WEB_PAGE_SIZE));
-  if(webPage>pages)webPage=pages;
-  _webPagedReviews=filtered.slice((webPage-1)*WEB_PAGE_SIZE,webPage*WEB_PAGE_SIZE);
-  document.getElementById('web-count-badge').textContent=`${total.toLocaleString()}건`;
+  _webPagedReviews=filtered;
+  document.getElementById('web-count-badge').textContent=`${filtered.length.toLocaleString()}건`;
   renderReviewRows('web-reviews-tbody',_webPagedReviews,'openWebModal',false);
-  renderPaginationFor('web-pagination',webPage,pages,'web');
 }
 
 function openStoreModal(i){openModal(_storePagedReviews[i]);}
@@ -1476,29 +1743,28 @@ function priClass(l){return l==='긴급'?'priority-urgent':l==='높음'?'priorit
 function renderReviewRows(tbodyId,reviews,openFn,showRating){
   const tbody=document.getElementById(tbodyId);
   const isWeb=!showRating;
-  const colspan = isWeb ? 5 : 7;
+  const colspan = isWeb ? 5 : 6;
   if(!reviews||!reviews.length){
     tbody.innerHTML=`<tr><td colspan="${colspan}"><div class="no-data"><div class="no-data-icon">🔍</div>조건에 맞는 리뷰가 없습니다.</div></td></tr>`;
     return;
   }
   const sentMap={positive:'긍정',neutral:'중립',negative:'부정'};
   tbody.innerHTML=reviews.map((r,i)=>{
-    const stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'–';
+    const starSvg=`<svg viewBox="0 0 24 24" width="12" height="12" fill="#f59e0b" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path stroke="#f59e0b" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" d="M12 2.5l2.47 5.01 5.53.8-4 3.9.95 5.49L12 15.27l-4.95 2.43.95-5.49-4-3.9 5.53-.8z"/></svg>`;
+    const rStars=(n)=>n?[...Array(n)].map(()=>starSvg).join(''):'–';
     const dateStr=r.date?r.date.substring(0,10):'–';
     const body=(isWeb?(r.title||r.body||''):(r.body||r.title||'')).trim();
-    const src=r.source||'web_snippet';const lvl=r.priority_level||'낮음';const sent=r.sentiment||'neutral';
-    const rCell=showRating?`<td><span class="stars">${stars}</span></td>`:'';
-    const sentCell=!isWeb?`<td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap ${sentClass(sent)}">${sentMap[sent]}</span></td>`:'';
+    const src=r.source||'web_snippet';const lvl=r.priority_level||'낮음';
+    const rCell=showRating?`<td style="padding-left:11px;"><div style="display:flex;align-items:center;gap:0px;">${rStars(r.rating)}</div></td>`:'';
     const lCell=isWeb&&r.link
-      ?`<td onclick="event.stopPropagation()"><a href="${r.link}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.2);text-decoration:none;white-space:nowrap;">원문보기 →</a></td>`
+      ?`<td onclick="event.stopPropagation()"><a href="${r.link}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.2);text-decoration:none;white-space:nowrap;">원문보기 →</a></td>`
       :isWeb?`<td></td>`:'';
     const catLabel = isWeb ? getNaverCat(r) : (r.category||'기타');
     return `<tr onclick="${openFn}(${i})">
       <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${srcClass(src)}">${SRC_LABELS[src]||src}</span></td>
+      <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap" style="background:var(--c-tbl-hover);color:var(--c-text-2);border:1px solid var(--c-border);">${catLabel}</span></td>
       ${rCell}
-      ${sentCell}
-      <td><span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap" style="background:rgba(99,102,241,.08);color:#818cf8;border:1px solid rgba(99,102,241,.15);">${catLabel}</span></td>
-      <td><p class="text-clamp" style="color:var(--c-text);font-weight:400;font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;">${escapeHtml(body)}</p></td>
+      <td style="${isWeb?'':'padding-right:56px;'}"><p class="${isWeb?'text-clamp':''}" style="color:var(--c-text);font-weight:400;font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;line-height:1.5;">${escapeHtml(body)}</p></td>
       ${lCell}
       <td class="whitespace-nowrap" style="color:var(--c-text-3);font-size:11px;">${dateStr}</td>
     </tr>`;
@@ -1510,7 +1776,7 @@ function renderPaginationFor(cId,page,pages,section){
   if(pages<=1){c.innerHTML='';return;}
   const fn=section==='store'?'goStorePage':'goWebPage';
   const bs=Math.floor((page-1)/5)*5+1;const be=Math.min(bs+4,pages);
-  let h=`<button class="page-btn" onclick="${fn}(${bs-1})" ${bs<=1?'disabled':''}>‹ 이전</button>`;
+  let h=`<button class="page-btn" onclick="${fn}(${bs-1})" ${bs<=1?'disabled':''}>이전</button>`;
   for(let i=bs;i<=be;i++)h+=`<button class="page-btn ${i===page?'active':''}" onclick="${fn}(${i})">${i}</button>`;
   h+=`<button class="page-btn" onclick="${fn}(${be+1})" ${be>=pages?'disabled':''}>다음 ›</button>`;
   h+=`<span class="page-info ml-2">${page} / ${pages}</span>`;
@@ -1566,7 +1832,7 @@ function renderKwModal() {
   container.innerHTML = Object.entries(kwData).map(([cat, kws]) => `
     <div style="border:1px solid var(--c-modal-bd);border-radius:10px;padding:14px 16px;">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-xs font-bold uppercase tracking-wider" style="color:var(--c-text-2);">${CAT_LABELS[cat]||cat}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--c-text-2);">${CAT_LABELS[cat]||cat}</span>
         <span class="text-xs" style="color:var(--c-text-3);">${kws.length}개</span>
       </div>
       <div class="flex flex-wrap gap-1.5 mb-3" id="kw-tags-${cat}">
@@ -1608,6 +1874,195 @@ function showLoading(show,msg){const o=document.getElementById('loading-overlay'
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+(type||'');setTimeout(()=>{t.className='';},4000);}
 function escapeHtml(text){return(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// ── 인라인 캘린더 ──────────────────────────────────────────────────────────
+let _rpCalYear, _rpCalMonth, _rpSelectStep = 0;
+const _rpFmt = d => d.toISOString().split('T')[0];
+const _rpToday = _rpFmt(new Date());
+
+function rpCalInit() {
+  const today = new Date();
+  _rpCalYear  = today.getFullYear();
+  _rpCalMonth = today.getMonth();
+  // 기본값: 6개월 전 ~ 오늘
+  const start = new Date(today); start.setMonth(today.getMonth() - 6);
+  document.getElementById('rp-start').value = _rpFmt(start);
+  document.getElementById('rp-end').value   = _rpFmt(today);
+  const si = document.getElementById('rp-start-input');
+  const ei = document.getElementById('rp-end-input');
+  if(si) si.value = _rpFmt(start);
+  if(ei) ei.value = _rpFmt(today);
+  _rpSelectStep = 0;
+  const hintEl = document.getElementById('rp-period-hint');
+  if(hintEl) hintEl.textContent = '시작일을 클릭하면 다시 설정할 수 있어요';
+  rpCalRender();
+}
+
+function rpCalRender() {
+  const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const titleEl = document.getElementById('rp-cal-title');
+  if(titleEl) titleEl.textContent = `${_rpCalYear}년 ${MONTHS[_rpCalMonth]}`;
+
+  const grid = document.getElementById('rp-cal-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  const s = document.getElementById('rp-start').value;
+  const e = document.getElementById('rp-end').value;
+  const firstDay  = new Date(_rpCalYear, _rpCalMonth, 1).getDay();
+  const daysInMon = new Date(_rpCalYear, _rpCalMonth + 1, 0).getDate();
+
+  // 빈칸
+  for(let i = 0; i < firstDay; i++) {
+    const blank = document.createElement('div'); blank.className = 'rp-cal-empty'; grid.appendChild(blank);
+  }
+
+  for(let d = 1; d <= daysInMon; d++) {
+    const ds = `${_rpCalYear}-${String(_rpCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const btn = document.createElement('button');
+    btn.textContent = d;
+    btn.className = 'rp-cal-day';
+    if(ds === _rpToday)    btn.classList.add('rp-cal-today');
+    if(ds >  _rpToday)    btn.classList.add('rp-cal-disabled');
+    if(s && e) {
+      if(ds === s)         btn.classList.add('rp-cal-start');
+      else if(ds === e)    btn.classList.add('rp-cal-end');
+      else if(ds > s && ds < e) btn.classList.add('rp-cal-range');
+    } else if(s && !e && ds === s) {
+      btn.classList.add('rp-cal-start');
+    }
+    if(ds <= _rpToday) {
+      btn.onclick = () => rpCalSelect(ds);
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function rpCalSelect(ds) {
+  const sEl = document.getElementById('rp-start');
+  const eEl = document.getElementById('rp-end');
+  const hintEl = document.getElementById('rp-period-hint');
+
+  if(_rpSelectStep === 0 || (sEl.value && eEl.value)) {
+    // 새 범위 시작
+    sEl.value = ds; eEl.value = '';
+    _rpSelectStep = 1;
+    if(hintEl) hintEl.textContent = '종료일을 선택하세요';
+    document.querySelectorAll('.rp-quick').forEach(b => b.classList.remove('rp-active'));
+  } else {
+    // 종료일 설정
+    if(ds < sEl.value) { sEl.value = ds; eEl.value = ''; _rpSelectStep = 1; return rpCalRender(); }
+    eEl.value = ds;
+    _rpSelectStep = 0;
+    if(hintEl) hintEl.textContent = '시작일을 클릭하면 다시 설정할 수 있어요';
+    const ei = document.getElementById('rp-end-input');
+    if(ei) ei.value = ds;
+    rpUpdatePeriodDisplay();
+  }
+  const si = document.getElementById('rp-start-input');
+  if(si && sEl.value) si.value = sEl.value;
+  rpCalRender();
+}
+
+function rpCalMove(dir) {
+  _rpCalMonth += dir;
+  if(_rpCalMonth > 11) { _rpCalMonth = 0;  _rpCalYear++; }
+  if(_rpCalMonth < 0)  { _rpCalMonth = 11; _rpCalYear--; }
+  rpCalRender();
+}
+
+function rpCalClear() {
+  document.getElementById('rp-start').value = '';
+  document.getElementById('rp-end').value   = '';
+  _rpSelectStep = 0;
+  document.querySelectorAll('.rp-quick').forEach(b => b.classList.remove('rp-active'));
+  const hintEl = document.getElementById('rp-period-hint');
+  if(hintEl) hintEl.textContent = '시작일을 먼저 선택하세요';
+  const si = document.getElementById('rp-start-input');
+  const ei = document.getElementById('rp-end-input');
+  if(si) { si.value = ''; si.classList.remove('rp-input-error'); }
+  if(ei) { ei.value = ''; ei.classList.remove('rp-input-error'); }
+  rpCalRender();
+}
+
+function rpUpdatePeriodDisplay() {
+  const s = document.getElementById('rp-start').value;
+  const e = document.getElementById('rp-end').value;
+  const si = document.getElementById('rp-start-input');
+  const ei = document.getElementById('rp-end-input');
+  if(si && s) si.value = s;
+  if(ei && e) ei.value = e;
+  const hintEl = document.getElementById('rp-period-hint');
+  if(hintEl && s && e) hintEl.textContent = '시작일을 클릭하면 다시 설정할 수 있어요';
+}
+
+// 자동 대시 삽입 (YYYY-MM-DD 포맷)
+function rpAutoFormat(input) {
+  let v = input.value.replace(/\D/g, '');
+  if(v.length > 4) v = v.slice(0,4) + '-' + v.slice(4);
+  if(v.length > 7) v = v.slice(0,7) + '-' + v.slice(7);
+  if(v.length > 10) v = v.slice(0,10);
+  input.value = v;
+}
+
+// 텍스트 입력 → 달력 연동
+function rpHandleTextInput(type, val) {
+  const inputEl = document.getElementById(type === 'start' ? 'rp-start-input' : 'rp-end-input');
+  if(val.length < 10) { inputEl && inputEl.classList.remove('rp-input-error'); return; }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(val)) { inputEl && inputEl.classList.add('rp-input-error'); return; }
+  const d = new Date(val);
+  if(isNaN(d) || val > _rpToday) { inputEl && inputEl.classList.add('rp-input-error'); return; }
+  inputEl && inputEl.classList.remove('rp-input-error');
+  document.getElementById(type === 'start' ? 'rp-start' : 'rp-end').value = val;
+  document.querySelectorAll('.rp-quick').forEach(b => b.classList.remove('rp-active'));
+  if(type === 'start') {
+    _rpCalYear  = d.getFullYear();
+    _rpCalMonth = d.getMonth();
+    _rpSelectStep = 1;
+    const hintEl = document.getElementById('rp-period-hint');
+    if(hintEl) hintEl.textContent = '종료일을 선택하세요';
+  } else {
+    const s = document.getElementById('rp-start').value;
+    if(s && val >= s) {
+      _rpSelectStep = 0;
+      const hintEl = document.getElementById('rp-period-hint');
+      if(hintEl) hintEl.textContent = '시작일을 클릭하면 다시 설정할 수 있어요';
+    }
+  }
+  rpCalRender();
+}
+
+function setReportQuick(type, btn) {
+  const today = new Date();
+  let start = new Date(today);
+  switch(type) {
+    case 'this-month':  start = new Date(today.getFullYear(), today.getMonth(), 1); break;
+    case '3m':          start.setMonth(today.getMonth() - 3); break;
+    case '6m':          start.setMonth(today.getMonth() - 6); break;
+    case '1y':          start.setFullYear(today.getFullYear() - 1); break;
+    case 'this-year':   start = new Date(today.getFullYear(), 0, 1); break;
+  }
+  document.getElementById('rp-start').value = _rpFmt(start);
+  document.getElementById('rp-end').value   = _rpFmt(today);
+  _rpSelectStep = 0;
+  document.querySelectorAll('.rp-quick').forEach(b => b.classList.remove('rp-active'));
+  if(btn) btn.classList.add('rp-active');
+  // 시작 달로 이동
+  _rpCalYear  = start.getFullYear();
+  _rpCalMonth = start.getMonth();
+  rpCalRender();
+  rpUpdatePeriodDisplay();
+  const hintEl = document.getElementById('rp-period-hint');
+  if(hintEl) hintEl.textContent = '시작일을 클릭하면 다시 설정할 수 있어요';
+}
+
+function openReport() {
+  const s = document.getElementById('rp-start')?.value;
+  const e = document.getElementById('rp-end')?.value;
+  if(!s || !e) { showToast('기간을 선택해주세요', 'error'); return; }
+  if(s > e)    { showToast('시작일이 종료일보다 늦습니다', 'error'); return; }
+  window.open('/report?start=' + s + '&end=' + e, '_blank');
+}
+
 init();
 
 // ── 키워드 소스 모달 ─────────────────────────────────────────────────────────
@@ -1630,7 +2085,7 @@ async function openKwSourceModal(keyword) {
     const SRC_COLOR = {블로그:'#10b981', 카페:'#6366f1', 웹문서:'#f59e0b'};
     bodyEl.innerHTML = srcs.map((s,i) => `
       <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;${i ? 'border-top:1px solid var(--c-grid);' : ''}">
-        <span style="flex-shrink:0;font-size:10px;font-weight:700;padding:2px 7px;border-radius:9999px;
+        <span style="flex-shrink:0;font-size:10px;font-weight:600;padding:2px 7px;border-radius:9999px;
           background:${SRC_COLOR[s.source]||'#6b7280'}22;color:${SRC_COLOR[s.source]||'#6b7280'};">${s.source}</span>
         <div style="flex:1;min-width:0;">
           <p style="font-size:13px;font-weight:500;color:var(--c-text);margin:0 0 2px;
@@ -1658,7 +2113,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeKwSourc
     <!-- 헤더 -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--c-grid);">
       <div>
-        <h2 id="kw-modal-title" style="font-size:15px;font-weight:700;color:var(--c-text);margin:0 0 2px;"></h2>
+        <h2 id="kw-modal-title" style="font-size:15px;font-weight:600;color:var(--c-text);margin:0 0 2px;"></h2>
         <p style="font-size:12px;color:var(--c-text-3);margin:0;">M몰 구매 확인 문서 · 최신순</p>
       </div>
       <button onclick="closeKwSourceModal()" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--c-hover);color:var(--c-text-2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
